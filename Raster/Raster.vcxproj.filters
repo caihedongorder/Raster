@@ -54,6 +54,9 @@
     <ClInclude Include="DrawBezierCurve.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="DrawTriangleSample.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

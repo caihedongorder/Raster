@@ -77,6 +77,67 @@ namespace Raster
 				break;
 			}
 		}
+		void DrawTriangle(const Vector2dInt& pt1, const Vector2dInt& pt2,const Vector2dInt& pt3)
+		{
+			const Vector2dInt* pts[]= { &pt1,&pt2,&pt3 };
+
+			if (pts[0]->y > pts[1]->y) Math::Swap(pts[0],pts[1]);
+			if (pts[0]->y > pts[2]->y) Math::Swap(pts[0],pts[2]);
+			if (pts[1]->y > pts[2]->y) Math::Swap(pts[1],pts[2]);
+
+			const Vector2dInt* pTopPoint = pts[0];
+			const Vector2dInt* pBottom = pts[2];
+			const Vector2dInt* pOther = pts[1];
+
+			int xOffset1 = pOther->x - pTopPoint->x;
+			int yOffset1 = pOther->y - pTopPoint->y;
+			float currentX1 = pTopPoint->x;
+			float xStep1 = 1.0f*xOffset1 / Math::Abs(yOffset1);
+
+			int xOffset2 = pBottom->x - pTopPoint->x;
+			int yOffset2 = pBottom->y - pTopPoint->y;
+			float currentX2 = pTopPoint->x;
+			float xStep2 = 1.0f*xOffset2 / Math::Abs(yOffset2);
+
+			for (int y = pTopPoint->y; y <= pOther->y; ++y)
+			{
+				int x1 = Math::Round(currentX1);
+				int x2 = Math::Round(currentX2);
+				int dir = x1 > x2 ? -1.0f : 1.0f;
+				for (int x = x1; x != x2 + dir; x += dir)
+				{
+					_SetPixel(x, y, m_Color);
+				}
+				currentX1 += xStep1;
+				currentX2 += xStep2;
+			}
+
+			xOffset1 = pOther->x - pBottom->x;
+			yOffset1 = pOther->y - pBottom->y;
+			currentX1 = pBottom->x;
+			xStep1 = 1.0f * xOffset1 / Math::Abs(yOffset1);
+
+
+			xOffset2 = pTopPoint->x - pBottom->x;
+			yOffset2 = pTopPoint->y - pBottom->y;
+			currentX2 = pBottom->x;
+			xStep2 = 1.0f*xOffset2 / Math::Abs(yOffset2);
+
+			for (int y = pBottom->y; y > pOther->y; --y)
+			{
+				int x1 = Math::Round(currentX1);
+				int x2 = Math::Round(currentX2);
+				int dir = x1 > x2 ? -1.0f : 1.0f;
+				for (int x = x1; x != x2 + dir; x += dir)
+				{
+					_SetPixel(x, y, m_Color);
+				}
+				currentX1 += xStep1;
+				currentX2 += xStep2;
+			}
+
+
+		}
 	private:
 		void _SetPixel(unsigned int x, unsigned int y, RGBA InColor)
 		{

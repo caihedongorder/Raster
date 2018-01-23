@@ -154,6 +154,7 @@
     <ClInclude Include="DrawLineSample.hpp" />
     <ClInclude Include="DrawPointSample.hpp" />
     <ClInclude Include="DrawSample.hpp" />
+    <ClInclude Include="DrawTriangleSample.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RGBA.hpp" />

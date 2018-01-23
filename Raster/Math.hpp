@@ -35,6 +35,13 @@ namespace Raster
 			return Value >= 0 ? Value : -Value;
 		}
 
+		template<typename T>
+		static inline void Swap(T& value1, T& value2)
+		{
+			T tmp = value2;
+			value2 = value1;
+			value1 = tmp;
+		}
 		static inline float Degree2Radian(float InDegree)
 		{
 			//return InDegree * 0.0174532925f;
