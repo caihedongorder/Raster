@@ -17,6 +17,10 @@ namespace Raster
 			pt4 = Vector2dInt(100, 100);
 			pt5 = Vector2dInt(150, 0);
 			pt6 = Vector2dInt(200, 200);
+
+			pt7 = Vector2dInt(200, 10);
+			pt8 = Vector2dInt(600, 10);
+			pt9 = Vector2dInt(400, 0);
 		}
 
 		void OnRender(ColorBuffer& InColorBuffer)
@@ -25,6 +29,7 @@ namespace Raster
 
 			InColorBuffer.DrawTriangle(pt1, pt2, pt3);
 			InColorBuffer.DrawTriangle(pt4, pt5, pt6);
+			InColorBuffer.DrawTriangle(pt7, pt8, pt9);
 		}
 	private:
 		int Width, Height;
@@ -34,5 +39,8 @@ namespace Raster
 		Vector2dInt pt4;
 		Vector2dInt pt5;
 		Vector2dInt pt6;
+		Vector2dInt pt7;
+		Vector2dInt pt8;
+		Vector2dInt pt9;
 	};
 }
