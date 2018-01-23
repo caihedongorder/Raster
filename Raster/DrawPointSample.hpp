@@ -17,7 +17,8 @@ namespace Raster
 			InColorBuffer.Clear();
 			for (int i =0; i < 100;++i)
 			{
-				InColorBuffer.DrawArrays(DM_POINTS,&Vector2dInt(Math::RandInRange<int>(0, Width), Math::RandInRange<int>(0, Height)),1);
+				InColorBuffer.VertexPointer(2, VET_INT,0,&Vector2dInt(Math::RandInRange<int>(0, Width), Math::RandInRange<int>(0, Height)));
+				InColorBuffer.DrawArrays(DM_POINTS,0,1);
 			}
 		}
 	private:

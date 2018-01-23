@@ -33,7 +33,8 @@ namespace Raster
 		{
 			InColorBuffer.Clear();
 
-			InColorBuffer.DrawArrays(DM_LINE_STRIP, points, pointCount);
+			InColorBuffer.VertexPointer(2, VET_INT, 0, points);
+			InColorBuffer.DrawArrays(DM_LINE_STRIP, 0, pointCount);
 		}
 	private:
 		int Width, Height;

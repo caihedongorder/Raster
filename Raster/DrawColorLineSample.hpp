@@ -4,10 +4,10 @@
 
 namespace Raster
 {
-	class DrawLine :public RenderSample
+	class DrawColorLine :public RenderSample
 	{
 	public:
-		DrawLine(int InW,int InH){
+		DrawColorLine(int InW,int InH){
 			Width = InW;
 			Height = InH;
 		}
@@ -31,6 +31,21 @@ namespace Raster
 				Vector2dInt(420, 300),Vector2dInt(220, 0),
 				Vector2dInt(420, 300),Vector2dInt(620, 0),
 				Vector2dInt(420, 300),Vector2dInt(420, 0),
+			};
+			Vector4dFloat colors[] = {
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
+				Vector4dFloat(1.0f,0.0f,0.0f,1.0f),Vector4dFloat(0.0f,1.0f,0.0f,1.0f),
 			};
 
 			InColorBuffer.VertexPointer(2, VET_INT, 0, points);

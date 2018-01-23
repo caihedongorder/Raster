@@ -11,6 +11,15 @@ namespace Raster
 		DM_LINES,
 		DM_LINE_STRIP,
 		DM_LINE_LOOP,
+		DM_TRIANGLS,
+	};
+	enum EVexterElementType
+	{
+		VET_BYTE,
+		VET_SHORT,
+		VET_FIXED,
+		VET_FLOAT,
+		VET_INT,
 	};
 	class ColorBuffer
 	{
@@ -33,15 +42,27 @@ namespace Raster
 				m_Buffer[i] = InColor;
 			}
 		}
-		void DrawArrays(EDrawMode InDrawMode, Vector2dInt* Points, int PointCount)
+		void VertexPointer(int ElementCount, EVexterElementType	VET, int nStride, void* pVertex)
 		{
+			m_VertexPointer = pVertex;
+			m_VertexStride = nStride == 0 ? EvaStride(VET,ElementCount) : nStride;
+		}
+		void ColorPointer(int ElementCount, EVexterElementType VET, int nStride, void* pColor)
+		{
+			m_ColorPointer = pColor;
+			m_ColorStride = nStride == 0 ? EvaStride(VET,ElementCount) : nStride;
+		}
+		void DrawArrays(EDrawMode InDrawMode, int FirstIndex, int PointCount)
+		{
+			Vector2dInt* Points = (Vector2dInt*)(m_VertexPointer);
+			Vector4dFloat* Colors = (Vector4dFloat*)(m_ColorPointer);
 			switch (InDrawMode)
 			{
 			case Raster::DM_POINTS:
 				{
 					for (int i = 0;i<PointCount;++i)
 					{
-						DrawPoint(Points[i]);
+						DrawPoint(GetElement<Vector2dInt>(Points,i,m_VertexStride));
 					}
 				}
 				break;
@@ -50,7 +71,7 @@ namespace Raster
 					PointCount = PointCount / 2 * 2;
 					for (int i = 0 ; i < PointCount ; i += 2 )
 					{
-						DrawLine(Points[i], Points[i + 1]);
+						DrawLine(i, i + 1);
 					}
 				}
 				break;
@@ -59,7 +80,7 @@ namespace Raster
 					if (PointCount < 2) return;
 					for (int i = 0 ; i < PointCount - 1 ; ++i )
 					{
-						DrawLine(Points[i] , Points [i + 1]);
+						DrawLine(i, i + 1);
 					}
 				}
 				break;
@@ -68,18 +89,34 @@ namespace Raster
 					if (PointCount <= 2) return;
 					for (int i = 0 ; i < PointCount ; ++i )
 					{
-						if (i == PointCount - 1)DrawLine(Points[0], Points[PointCount - 1]);
-						else DrawLine(Points[i] , Points [i + 1]);
+						if (i == PointCount - 1)
+							DrawLine(0,PointCount-1);
+						else 
+							DrawLine(i,i+1);
 					}
 				}
+				break;
+			case Raster::DM_TRIANGLS:
+				{
+					if (PointCount <= 2) return;
+					int TriangleCount = PointCount / 3;
+					for (int i = 0 ; i < TriangleCount ; ++i)
+					{
+						DrawTriangle(GetElement<Vector2dInt>(Points, i * 3, m_VertexStride),
+							GetElement<Vector2dInt>(Points, i * 3 + 1, m_VertexStride),
+							GetElement<Vector2dInt>(Points, i * 3 + 2, m_VertexStride));
+					}
+				}
+
 				break;
 			default:
 				break;
 			}
 		}
-		void DrawTriangle(const Vector2dInt& pt1, const Vector2dInt& pt2,const Vector2dInt& pt3)
+	private:
+		void DrawTriangle(const Vector2dInt* pt1, const Vector2dInt* pt2,const Vector2dInt* pt3)
 		{
-			const Vector2dInt* pts[]= { &pt1,&pt2,&pt3 };
+			const Vector2dInt* pts[]= { pt1,pt2,pt3 };
 
 			if (pts[0]->y > pts[1]->y) Math::Swap(pts[0],pts[1]);
 			if (pts[0]->y > pts[2]->y) Math::Swap(pts[0],pts[2]);
@@ -93,13 +130,38 @@ namespace Raster
 
 			DrawHalfTriangle(pOther, pBottom, pTopPoint);
 		}
-
-	private:
+		template<typename T>
+		const T* GetElement(void* Base, int Index, int nStride) { return (T*)((unsigned char*)(Base) + Index * nStride); }
+		inline int EvaStride(EVexterElementType InType, int ElementCount)
+		{
+			int BaseSize = 0;
+			switch (InType)
+			{
+			case Raster::VET_BYTE:
+				BaseSize = 1;
+				break;
+			case Raster::VET_SHORT:
+				BaseSize = 2;
+				break;
+			case Raster::VET_FIXED:
+				BaseSize = 4;
+				break;
+			case Raster::VET_FLOAT:
+				BaseSize = 4;
+				break;
+			case Raster::VET_INT:
+				BaseSize = 4;
+				break;
+			default:
+				break;
+			}
+			return BaseSize * ElementCount;
+		}
 		inline void DrawHalfTriangle(const Vector2dInt* pOther, const Vector2dInt* pTopPoint, const Vector2dInt* pBottom)
 		{
 			int xOffset1 = pOther->x - pTopPoint->x;
 			int yOffset1 = pOther->y - pTopPoint->y;
-			float currentX1 = pTopPoint->x;
+			float currentX1 = (float)pTopPoint->x;
 			float xStep1 = 1.0f*xOffset1 / Math::Abs(yOffset1);
 
 			int xOffset2 = pBottom->x - pTopPoint->x;
@@ -127,24 +189,30 @@ namespace Raster
 
 			m_Buffer[y*m_Width + x] = InColor;
 		}
-		void DrawPoint(const Vector2dInt& pt)
+		void DrawPoint(const Vector2dInt* pt)
 		{
-			_SetPixel(pt.x, pt.y, m_Color);
+			_SetPixel(pt->x, pt->y, m_Color);
 		}
-		void DrawLine(const Vector2dInt& Pt1,const Vector2dInt& Pt2)
+		void DrawLine(int pt1,int pt2)
 		{
-			int xOffset = Pt2.x - Pt1.x;
-			int yOffset = Pt2.y - Pt1.y;
+			const Vector2dInt* Pt1 = GetElement<Vector2dInt>(m_VertexPointer, pt1, m_VertexStride);
+			const Vector2dInt* Pt2 = GetElement<Vector2dInt>(m_VertexPointer, pt2, m_VertexStride);
+
+			const Vector4dFloat* Color1 = GetElement<Vector4dFloat>(m_ColorPointer, pt1, m_ColorStride);
+			const Vector4dFloat* Color2 = GetElement<Vector4dFloat>(m_ColorPointer, pt2, m_ColorStride);
+
+			int xOffset = Pt2->x - Pt1->x;
+			int yOffset = Pt2->y - Pt1->y;
 			if (Math::Abs(xOffset) > Math::Abs(yOffset))
 			//x轴长一点 使用X轴为基轴进行栅格化
 			{
 				float yStep = xOffset != 0 ? 1.0f*yOffset / Math::Abs(xOffset) : 0;
-				int xStep = Pt2.x > Pt1.x ? 1 : -1;
-				float currentY = Pt1.y;
-				for (int x = Pt1.x; x != Pt2.x + xStep; x += xStep)
+				int xStep = Pt2->x > Pt1->x ? 1 : -1;
+				float currentY = Pt1->y;
+				for (int x = Pt1->x; x != Pt2->x + xStep; x += xStep)
 				{
 					int y = Math::Round(currentY);
-					_SetPixel(x, y,m_Color);
+					_SetPixel(x, y, m_Color);
 
 					currentY += yStep;
 					
@@ -154,9 +222,9 @@ namespace Raster
 			//使用Y轴为基轴进行栅格化
 			{
 				float xStep = yOffset != 0 ? 1.0f*xOffset / Math::Abs(yOffset) : 0;
-				int yStep = Pt2.y > Pt1.y ? 1 : -1;
-				float currentX = Pt1.x;
-				for (int y = Pt1.y; y != Pt2.y + yStep; y += yStep)
+				int yStep = Pt2->y > Pt1->y ? 1 : -1;
+				float currentX = Pt1->x;
+				for (int y = Pt1->y; y != Pt2->y + yStep; y += yStep)
 				{
 					int x = Math::Round(currentX);
 					_SetPixel(x, y,m_Color);
@@ -171,5 +239,12 @@ namespace Raster
 		int m_Height;
 		RGBA* m_Buffer;
 		RGBA m_Color;
+
+		int m_VertexStride = 0;
+		void* m_VertexPointer = nullptr;
+
+		int m_ColorStride = 0;
+		void* m_ColorPointer = nullptr;
+
 	};
 }
