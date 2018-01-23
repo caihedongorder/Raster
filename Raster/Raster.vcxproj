@@ -152,6 +152,7 @@
     <ClInclude Include="DrawCircleSample.hpp" />
     <ClInclude Include="DrawCircleSample1.hpp" />
     <ClInclude Include="DrawColorLineSample.hpp" />
+    <ClInclude Include="DrawColorTriangleSample.hpp" />
     <ClInclude Include="DrawLineSample.hpp" />
     <ClInclude Include="DrawPointSample.hpp" />
     <ClInclude Include="DrawSample.hpp" />

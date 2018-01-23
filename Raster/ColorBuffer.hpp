@@ -23,6 +23,14 @@ namespace Raster
 	};
 	class ColorBuffer
 	{
+	private:
+		struct DrawLineParams 
+		{
+			const Vector2dInt* pt1;
+			const Vector2dInt* pt2;
+			const Vector4dFloat *color1;
+			const Vector4dFloat *color2;
+		};
 	public:
 		int GetWidth() const { return m_Width; }
 		int GetHeight() const { return m_Height; }
@@ -102,9 +110,7 @@ namespace Raster
 					int TriangleCount = PointCount / 3;
 					for (int i = 0 ; i < TriangleCount ; ++i)
 					{
-						DrawTriangle(GetElement<Vector2dInt>(Points, i * 3, m_VertexStride),
-							GetElement<Vector2dInt>(Points, i * 3 + 1, m_VertexStride),
-							GetElement<Vector2dInt>(Points, i * 3 + 2, m_VertexStride));
+						DrawTriangle(i * 3, i * 3 + 1, i * 3 + 2);
 					}
 				}
 
@@ -114,21 +120,23 @@ namespace Raster
 			}
 		}
 	private:
-		void DrawTriangle(const Vector2dInt* pt1, const Vector2dInt* pt2,const Vector2dInt* pt3)
+		void DrawTriangle(int pt1,int pt2,int pt3)
 		{
-			const Vector2dInt* pts[]= { pt1,pt2,pt3 };
+			const Vector2dInt* point1 = GetElement<Vector2dInt>(m_VertexPointer,pt1,m_VertexStride);
+			const Vector2dInt* point2 = GetElement<Vector2dInt>(m_VertexPointer,pt2,m_VertexStride);
+			const Vector2dInt* point3 = GetElement<Vector2dInt>(m_VertexPointer,pt3,m_VertexStride);
 
-			if (pts[0]->y > pts[1]->y) Math::Swap(pts[0],pts[1]);
-			if (pts[0]->y > pts[2]->y) Math::Swap(pts[0],pts[2]);
-			if (pts[1]->y > pts[2]->y) Math::Swap(pts[1],pts[2]);
+			int TopPoint	= pt1;
+			int BottomPoint = pt2;
+			int OtherPoint	= pt3;
 
-			const Vector2dInt* pTopPoint = pts[0];
-			const Vector2dInt* pBottom = pts[2];
-			const Vector2dInt* pOther = pts[1];
+			if (point1->y > point2->y) {	Math::Swap(TopPoint, BottomPoint); Math::Swap(point1, point2);	}
+			if (point1->y > point3->y) {	Math::Swap(TopPoint, OtherPoint); Math::Swap(point1, point3);	}
+			if (point2->y < point3->y) {	Math::Swap(BottomPoint, OtherPoint); Math::Swap(point2, point3);	}
 
-			DrawHalfTriangle(pOther, pTopPoint, pBottom);
+			DrawHalfTriangle(OtherPoint, TopPoint, BottomPoint);
+			//DrawHalfTriangle(OtherPoint, BottomPoint, TopPoint);
 
-			DrawHalfTriangle(pOther, pBottom, pTopPoint);
 		}
 		template<typename T>
 		const T* GetElement(void* Base, int Index, int nStride) { return (T*)((unsigned char*)(Base) + Index * nStride); }
@@ -157,8 +165,16 @@ namespace Raster
 			}
 			return BaseSize * ElementCount;
 		}
-		inline void DrawHalfTriangle(const Vector2dInt* pOther, const Vector2dInt* pTopPoint, const Vector2dInt* pBottom)
+		inline void DrawHalfTriangle(int OtherPoint,int TopPoint,int BottomPoint)
 		{
+			const Vector2dInt* pOther = GetElement<Vector2dInt>(m_VertexPointer,OtherPoint,m_VertexStride);
+			const Vector2dInt* pTopPoint = GetElement<Vector2dInt>(m_VertexPointer,TopPoint,m_VertexStride);
+			const Vector2dInt* pBottom = GetElement<Vector2dInt>(m_VertexPointer,BottomPoint,m_VertexStride);
+
+			const Vector4dFloat* OtherColor = GetElement<Vector4dFloat>(m_ColorPointer, OtherPoint, m_ColorStride);
+			const Vector4dFloat* TopColor = GetElement<Vector4dFloat>(m_ColorPointer, TopPoint, m_ColorStride);
+			const Vector4dFloat* BottomColor = GetElement<Vector4dFloat>(m_ColorPointer, BottomPoint, m_ColorStride);
+
 			int xOffset1 = pOther->x - pTopPoint->x;
 			int yOffset1 = pOther->y - pTopPoint->y;
 			float currentX1 = (float)pTopPoint->x;
@@ -169,18 +185,38 @@ namespace Raster
 			float currentX2 = pTopPoint->x;
 			float xStep2 = 1.0f*xOffset2 / Math::Abs(yOffset2);
 
+			Vector2dInt LinePoint1;
+			Vector2dInt LinePoint2;
+			Vector4dFloat LinePointColor1(1.0f,1.0f,1.0f,1.0f);
+			Vector4dFloat LinePointColor2(1.0f,1.0f,1.0f,1.0f);
+
+			
+			Vector4dFloat currentColorT2O = *TopColor;
+			Vector4dFloat byteColorStepT2O;
+			if (OtherColor) byteColorStepT2O = (*OtherColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
+
+			Vector4dFloat currentColorT2B = *TopColor;
+			Vector4dFloat byteColorStepT2B;
+			if (OtherColor) byteColorStepT2B = (*BottomColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pBottom->y));
+
+			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B };
+
 			int ydir = pTopPoint->y < pBottom->y ? 1 : -1;
 			for (int y = pTopPoint->y; y != pOther->y + ydir; y += ydir)
 			{
 				int x1 = Math::Round(currentX1);
 				int x2 = Math::Round(currentX2);
-				int dir = x1 > x2 ? -1.0f : 1.0f;
-				for (int x = x1; x != x2 + dir; x += dir)
-				{
-					_SetPixel(x, y, m_Color);
-				}
+				LinePoint1.x = x1;
+				LinePoint2.x = x2;
+				LinePoint1.y = LinePoint2.y = y;
+
+
+				DrawLineImpl(drawLineParam);
+
 				currentX1 += xStep1;
 				currentX2 += xStep2;
+				currentColorT2O += byteColorStepT2O;
+				currentColorT2B += byteColorStepT2B;
 			}
 		}
 		void _SetPixel(unsigned int x, unsigned int y, RGBA InColor)
@@ -201,75 +237,88 @@ namespace Raster
 			const Vector4dFloat* Color1 = GetElement<Vector4dFloat>(m_ColorPointer, pt1, m_ColorStride);
 			const Vector4dFloat* Color2 = GetElement<Vector4dFloat>(m_ColorPointer, pt2, m_ColorStride);
 
+			DrawLineImpl({ Pt1, Pt2, Color1, Color2 });
+		}
+
+		inline void DrawLineImpl(const DrawLineParams& InParams)
+		{
+			auto Pt1 = InParams.pt1;
+			auto Pt2 = InParams.pt2;
+			auto Color1 = InParams.color1;
+			auto Color2 = InParams.color2;
+			if (Pt1->x == Pt2->x && Pt1->y == Pt2->y) { _SetPixel(Pt1->x, Pt1->y, RGBA(*Color1)); return; }
+
 			int xOffset = Pt2->x - Pt1->x;
 			int yOffset = Pt2->y - Pt1->y;
 			if (Math::Abs(xOffset) > Math::Abs(yOffset))
-			//x轴长一点 使用X轴为基轴进行栅格化
+				//x轴长一点 使用X轴为基轴进行栅格化
 			{
 				float yStep = xOffset != 0 ? 1.0f*yOffset / Math::Abs(xOffset) : 0;
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
 				float currentY = Pt1->y;
-				float currentAlpha = 0;
-				float AlphaStep = 1.0f / Math::Abs(Pt2->x - Pt1->x);
-				Vector4dFloat byteColor1 = Vector4dFloat(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
-				Vector4dFloat byteColor2 = Vector4dFloat(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
-				Vector4dFloat byteColorStep = (byteColor2 - byteColor1)*AlphaStep;
-				Vector4dFloat currentColor = byteColor1;
+
+				Vector4dFloat currentColor;
+				Vector4dFloat byteColorStep;
+				if (Color1) byteColorStep = EvaByteColorStep(Color1, Color2, 1.0f / Math::Abs(Pt2->x - Pt1->x), currentColor);
 
 				for (int x = Pt1->x; x != Pt2->x + xStep; x += xStep)
 				{
 					int y = Math::Round(currentY);
 
 					RGBA color = m_Color;
-	
+
 					if (Color1)
 					{
-						color = RGBA(Math::Round(currentColor.x),Math::Round(currentColor.y),Math::Round(currentColor.z),currentColor.w);
-						//currentColor = Math::Lerp(*Color1, *Color2, currentAlpha);
-						//color = RGBA(currentColor);
+						color = ByteColor2RGBA(currentColor);
 					}
 					_SetPixel(x, y, color);
 
 					currentY += yStep;
-					currentAlpha += AlphaStep;
 					currentColor += byteColorStep;
 				}
 			}
 			else
-			//使用Y轴为基轴进行栅格化
+				//使用Y轴为基轴进行栅格化
 			{
 				float xStep = yOffset != 0 ? 1.0f*xOffset / Math::Abs(yOffset) : 0;
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
 				float currentX = Pt1->x;
 
-				float currentAlpha = 0;
-				float AlphaStep = 1.0f / Math::Abs(Pt2->y - Pt1->y);
-				Vector4dFloat byteColor1 = Vector4dFloat(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
-				Vector4dFloat byteColor2 = Vector4dFloat(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
-				Vector4dFloat byteColorStep = (byteColor2 - byteColor1)*AlphaStep;
-				Vector4dFloat currentColor = byteColor1;
+				Vector4dFloat currentColor;
+				Vector4dFloat byteColorStep;
+				if (Color1) byteColorStep = EvaByteColorStep(Color1, Color2, 1.0f / Math::Abs(Pt2->y - Pt1->y), currentColor);
 
 				for (int y = Pt1->y; y != Pt2->y + yStep; y += yStep)
 				{
 					int x = Math::Round(currentX);
 
 					RGBA color = m_Color;
-	
+
 					if (Color1)
 					{
-						color = RGBA(currentColor.x,currentColor.y,currentColor.z,currentColor.w);
-						//currentColor = Math::Lerp(*Color1, *Color2, currentAlpha);
-						//color = RGBA(currentColor);
+						color = ByteColor2RGBA(currentColor);
 					}
-					_SetPixel(x, y,color);
+					_SetPixel(x, y, color);
 
 					currentX += xStep;
-					currentAlpha += AlphaStep;
 					currentColor += byteColorStep;
-					
+
 				}
 			}
 		}
+
+		inline RGBA ByteColor2RGBA(const Vector4dFloat& InByteColor)
+		{
+			return RGBA(Math::Round(InByteColor.x),Math::Round(InByteColor.y),Math::Round(InByteColor.z),Math::Round(InByteColor.w));
+		}
+		inline Vector4dFloat EvaByteColorStep(const Vector4dFloat* Color1, const Vector4dFloat* Color2, float AlphaStep,Vector4dFloat& OutCurrentByteColor)
+		{
+			Vector4dFloat byteColor1 = Vector4dFloat(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
+			Vector4dFloat byteColor2 = Vector4dFloat(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
+			OutCurrentByteColor = byteColor1;
+			return (byteColor2 - byteColor1)*AlphaStep;
+		}
+
 	private:
 		int m_Width;
 		int m_Height;
