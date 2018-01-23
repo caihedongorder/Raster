@@ -49,6 +49,7 @@ namespace Raster
 			};
 
 			InColorBuffer.VertexPointer(2, VET_INT, 0, points);
+			InColorBuffer.ColorPointer(4, VET_FLOAT, 0, colors);
 			InColorBuffer.DrawArrays(DM_LINES, 0 , sizeof(points) / sizeof(points[0]));
 
 			//Vector2dInt points1[] = {

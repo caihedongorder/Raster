@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include "Vector.hpp"
 
 namespace Raster
 {
@@ -27,6 +28,36 @@ namespace Raster
 		static T Lerp(T Start, T End, float Alpha)
 		{
 			return Start + (T)(Alpha * (End - Start));
+		}
+
+		template<typename T>
+		static Vector2d<T> Lerp(const Vector2d<T>& Start, const Vector2d<T>& End, float Alpha)
+		{
+			Vector2d<T> ReturnValue;
+			ReturnValue.x = Lerp<T>(Start.x, End.x, Alpha);
+			ReturnValue.y = Lerp<T>(Start.y, End.y, Alpha);
+			return ReturnValue;
+		}
+
+		template<typename T>
+		static Vector3d<T> Lerp(const Vector3d<T>& Start, const Vector3d<T>& End, float Alpha)
+		{
+			Vector3d<T> ReturnValue;
+			ReturnValue.x = Lerp<T>(Start.x, End.x, Alpha);
+			ReturnValue.y = Lerp<T>(Start.y, End.y, Alpha);
+			ReturnValue.z = Lerp<T>(Start.z, End.z, Alpha);
+			return ReturnValue;
+		}
+
+		template<typename T>
+		static Vector4d<T> Lerp(const Vector4d<T>& Start, const Vector4d<T>& End, float Alpha)
+		{
+			Vector4d<T> ReturnValue;
+			ReturnValue.x = Lerp<T>(Start.x, End.x, Alpha);
+			ReturnValue.y = Lerp<T>(Start.y, End.y, Alpha);
+			ReturnValue.z = Lerp<T>(Start.z, End.z, Alpha);
+			ReturnValue.w = Lerp<T>(Start.w, End.w, Alpha);
+			return ReturnValue;
 		}
 
 		template<typename T>

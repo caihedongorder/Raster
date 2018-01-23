@@ -62,6 +62,55 @@ namespace Raster
 		{
 			x = y = z = w = T();
 		}
+		Vector4d& operator+=(const Vector4d& Other)
+		{
+			this->x += Other.x;
+			this->y += Other.y;
+			this->z += Other.z;
+			this->w += Other.w;
+			return *this;
+		}
+
+		Vector4d& operator-=(const Vector4d& Other)
+		{
+			this->x -= Other.x;
+			this->y -= Other.y;
+			this->z -= Other.z;
+			this->w -= Other.w;
+			return *this;
+		}
+
+		Vector4d operator+(const Vector4d& Other) const
+		{
+			return Vector4d<T>(this->x + Other.x,
+				this->y + Other.y,
+				this->z + Other.z,
+				this->w + Other.w);
+		}
+		Vector4d operator-(const Vector4d& Other) const
+		{
+			return Vector4d<T>(this->x - Other.x,
+				this->y - Other.y,
+				this->z - Other.z,
+				this->w - Other.w);
+		}
+
+		Vector4d operator*(float InScale) const
+		{
+			return Vector4d<T>(this->x * InScale,
+				this->y * InScale,
+				this->z * InScale,
+				this->w * InScale);
+		}
+
+		Vector4d& operator*=(float InScale)
+		{
+			this->x *= InScale;
+			this->y *= InScale;
+			this->z *= InScale;
+			this->w *= InScale;
+			return *this;
+		}
 	};
 	typedef Vector4d<int> Vector4dInt;
 	typedef Vector4d<float> Vector4dFloat;

@@ -1,4 +1,5 @@
 #pragma once
+#include "Vector.hpp"
 
 namespace Raster
 {
@@ -11,6 +12,13 @@ namespace Raster
 			G = InG;
 			B = InB;
 			A = InA;
+		}
+		RGBA(const Vector4dFloat& InColorf)
+		{
+			R = (float)InColorf.x*255;
+			G = (float)InColorf.y*255;
+			B = (float)InColorf.z*255;
+			A = (float)InColorf.w*255;
 		}
 
 	public:

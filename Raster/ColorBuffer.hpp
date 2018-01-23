@@ -209,13 +209,30 @@ namespace Raster
 				float yStep = xOffset != 0 ? 1.0f*yOffset / Math::Abs(xOffset) : 0;
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
 				float currentY = Pt1->y;
+				float currentAlpha = 0;
+				float AlphaStep = 1.0f / Math::Abs(Pt2->x - Pt1->x);
+				Vector4dFloat byteColor1 = Vector4dFloat(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
+				Vector4dFloat byteColor2 = Vector4dFloat(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
+				Vector4dFloat byteColorStep = (byteColor2 - byteColor1)*AlphaStep;
+				Vector4dFloat currentColor = byteColor1;
+
 				for (int x = Pt1->x; x != Pt2->x + xStep; x += xStep)
 				{
 					int y = Math::Round(currentY);
-					_SetPixel(x, y, m_Color);
+
+					RGBA color = m_Color;
+	
+					if (Color1)
+					{
+						color = RGBA(Math::Round(currentColor.x),Math::Round(currentColor.y),Math::Round(currentColor.z),currentColor.w);
+						//currentColor = Math::Lerp(*Color1, *Color2, currentAlpha);
+						//color = RGBA(currentColor);
+					}
+					_SetPixel(x, y, color);
 
 					currentY += yStep;
-					
+					currentAlpha += AlphaStep;
+					currentColor += byteColorStep;
 				}
 			}
 			else
@@ -224,12 +241,31 @@ namespace Raster
 				float xStep = yOffset != 0 ? 1.0f*xOffset / Math::Abs(yOffset) : 0;
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
 				float currentX = Pt1->x;
+
+				float currentAlpha = 0;
+				float AlphaStep = 1.0f / Math::Abs(Pt2->y - Pt1->y);
+				Vector4dFloat byteColor1 = Vector4dFloat(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
+				Vector4dFloat byteColor2 = Vector4dFloat(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
+				Vector4dFloat byteColorStep = (byteColor2 - byteColor1)*AlphaStep;
+				Vector4dFloat currentColor = byteColor1;
+
 				for (int y = Pt1->y; y != Pt2->y + yStep; y += yStep)
 				{
 					int x = Math::Round(currentX);
-					_SetPixel(x, y,m_Color);
+
+					RGBA color = m_Color;
+	
+					if (Color1)
+					{
+						color = RGBA(currentColor.x,currentColor.y,currentColor.z,currentColor.w);
+						//currentColor = Math::Lerp(*Color1, *Color2, currentAlpha);
+						//color = RGBA(currentColor);
+					}
+					_SetPixel(x, y,color);
 
 					currentX += xStep;
+					currentAlpha += AlphaStep;
+					currentColor += byteColorStep;
 					
 				}
 			}
