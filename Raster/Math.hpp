@@ -1,6 +1,7 @@
 #pragma once
 #include <math.h>
 #include "Vector.hpp"
+#include "RGBA.hpp"
 
 namespace Raster
 {
@@ -57,6 +58,16 @@ namespace Raster
 			ReturnValue.y = Lerp<T>(Start.y, End.y, Alpha);
 			ReturnValue.z = Lerp<T>(Start.z, End.z, Alpha);
 			ReturnValue.w = Lerp<T>(Start.w, End.w, Alpha);
+			return ReturnValue;
+		}
+
+		static RGBA Lerp(const RGBA& Start, const RGBA& End, float Alpha)
+		{
+			RGBA ReturnValue;
+			ReturnValue.R = Lerp<unsigned char>(Start.R, End.R, Alpha);
+			ReturnValue.B = Lerp<unsigned char>(Start.B, End.B, Alpha);
+			ReturnValue.G = Lerp<unsigned char>(Start.G, End.G, Alpha);
+			ReturnValue.A = Lerp<unsigned char>(Start.A, End.A, Alpha);
 			return ReturnValue;
 		}
 

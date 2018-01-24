@@ -75,12 +75,16 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,6 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,6 +153,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -157,11 +163,14 @@
     <ClInclude Include="DrawCircleSample1.hpp" />
     <ClInclude Include="DrawColorLineSample.hpp" />
     <ClInclude Include="DrawColorTriangleSample.hpp" />
+    <ClInclude Include="DrawImageSample.hpp" />
     <ClInclude Include="DrawLineSample.hpp" />
     <ClInclude Include="DrawPointSample.hpp" />
     <ClInclude Include="DrawSample.hpp" />
+    <ClInclude Include="DrawTextureTriangle.hpp" />
     <ClInclude Include="DrawTriangleSample.hpp" />
     <ClInclude Include="FPS.hpp" />
+    <ClInclude Include="Image.hpp" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="Profile.hpp" />
     <ClInclude Include="resource.h" />

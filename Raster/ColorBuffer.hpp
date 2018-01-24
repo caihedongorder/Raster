@@ -1,8 +1,10 @@
 #pragma once
+#include <FreeImage.h>
 #include "RGBA.hpp"
 #include "Math.hpp"
 #include "Vector.hpp"
 #include "Profile.hpp"
+#include "Image.hpp"
 
 namespace Raster
 {
@@ -43,6 +45,14 @@ namespace Raster
 			m_Height = height;
 			m_Buffer = (RGBA*)InBuffer;
 			memset(m_Buffer, 0, m_Width*m_Height * sizeof(RGBA));
+
+
+			//≥ı ºªØFreeImageø‚
+			FreeImage_Initialise();
+		}
+		~ColorBuffer() {
+			//–∂‘ÿFreeImageø‚	
+			FreeImage_DeInitialise();
 		}
 		void Clear(RGBA InColor = RGBA(0,0,0,0))
 		{
@@ -50,6 +60,107 @@ namespace Raster
 			for (int i = 0;i < m_Width*m_Height;++i)
 			{
 				m_Buffer[i] = InColor;
+			}
+			RGBA* srcColor = m_Buffer+100+ 91*m_Width;
+			memset(m_Buffer, 0, m_Width*m_Height * sizeof(RGBA));
+		}
+
+		void DrawImage(int destX, int destY,int destWidth,int destHeight, Image* image)
+		{
+			int xStart = Math::Clamp(destX, 0, m_Width - 1);
+			int yStart = Math::Clamp(destY, 0, m_Height - 1);
+
+			int xEnd = Math::Clamp(destX + destWidth,	0, m_Width - 1);
+			int yEnd = Math::Clamp(destY + destHeight,  0, m_Height - 1);
+
+			Vector2dFloat StartUV;
+			float uStep = 1.0f / destWidth;
+			float vStep = 1.0f / destHeight;
+
+			for (int y = yStart; y <= yEnd; ++y )
+			{
+				StartUV.x = 0;
+				for (int x = xStart ; x <= xEnd ; ++x )
+				{
+					RGBA srcColor = PixelAt(x, y);
+					RGBA pixelColor = image->PixelFromUV(StartUV);
+					RGBA blendColor = Math::Lerp(srcColor, pixelColor, pixelColor.A / 255.0f);
+					_SetPixelEx(x, y, blendColor);
+					StartUV.x += uStep;
+				}
+				StartUV.y += vStep;
+			}
+		}
+		void DrawImage(int x, int y, Image* image)
+		{
+			int xStart = Math::Clamp(x, 0, m_Width - 1);
+			int yStart = Math::Clamp(y, 0, m_Height - 1);
+
+			int xEnd = Math::Clamp(x + image->GetWidth(), 0, m_Width - 1);
+			int yEnd = Math::Clamp(y + image->GetHeight(), 0, m_Height - 1);
+
+			for (int y = yStart; y <= yEnd; ++y )
+			{
+				for (int x = xStart ; x <= xEnd ; ++x )
+				{
+					_SetPixelEx(x, y, image->PixelAt(x - xStart,y - yStart));
+				}
+			}
+		}
+		void DrawImageWithColorKey(int x, int y, Image* image,RGBA InKey)
+		{
+			int xStart = Math::Clamp(x, 0, m_Width - 1);
+			int yStart = Math::Clamp(y, 0, m_Height - 1);
+
+			int xEnd = Math::Clamp(x + image->GetWidth(), 0, m_Width - 1);
+			int yEnd = Math::Clamp(y + image->GetHeight(), 0, m_Height - 1);
+
+			for (int y = yStart; y <= yEnd; ++y )
+			{
+				for (int x = xStart ; x <= xEnd ; ++x )
+				{
+					RGBA pixelColor = image->PixelAt(x - xStart, y - yStart);
+					if(InKey != pixelColor )
+						_SetPixelEx(x, y, image->PixelAt(x - xStart,y - yStart));
+				}
+			}
+		}
+		void DrawImageAlphaTest(int x, int y, Image* image,float InAlpha)
+		{
+			int xStart = Math::Clamp(x, 0, m_Width - 1);
+			int yStart = Math::Clamp(y, 0, m_Height - 1);
+
+			int xEnd = Math::Clamp(x + image->GetWidth(), 0, m_Width - 1);
+			int yEnd = Math::Clamp(y + image->GetHeight(), 0, m_Height - 1);
+
+			for (int y = yStart; y <= yEnd; ++y )
+			{
+				for (int x = xStart ; x <= xEnd ; ++x )
+				{
+					RGBA pixelColor = image->PixelAt(x - xStart, y - yStart);
+					if(pixelColor.A > InAlpha )
+						_SetPixelEx(x, y, image->PixelAt(x - xStart,y - yStart));
+					//_SetPixelEx(x, y, RGBA(pixelColor.A, pixelColor.A, pixelColor.A, pixelColor.A));
+				}
+			}
+		}
+		void DrawImageAlphaBlend(int x, int y, Image* image)
+		{
+			int xStart = Math::Clamp(x, 0, m_Width - 1);
+			int yStart = Math::Clamp(y, 0, m_Height - 1);
+
+			int xEnd = Math::Clamp(x + image->GetWidth(), 0, m_Width - 1);
+			int yEnd = Math::Clamp(y + image->GetHeight(), 0, m_Height - 1);
+
+			for (int y = yStart; y <= yEnd; ++y )
+			{
+				for (int x = xStart ; x <= xEnd ; ++x )
+				{
+					RGBA srcColor = PixelAt(x, y);
+					RGBA pixelColor = image->PixelAt(x - xStart, y - yStart);
+					RGBA blendColor = Math::Lerp(srcColor, pixelColor, pixelColor.A / 255.0f);
+					_SetPixelEx(x, y,blendColor );
+				}
 			}
 		}
 		void VertexPointer(int ElementCount, EVexterElementType	VET, int nStride, void* pVertex)
@@ -122,15 +233,26 @@ namespace Raster
 			}
 		}
 	private:
+		inline const Vector2dInt* GetVertexPosition(int Index) {
+			return GetElement<Vector2dInt>(m_VertexPointer, Index, m_VertexStride);
+		}
+		inline RGBA PixelAt(int x, int y) {
+			x = Math::Clamp(x, 0, m_Width);
+			y = Math::Clamp(y, 0, m_Height);
+			return m_Buffer[y*m_Width + x];
+		}
+		inline const Vector4dFloat* GetVertexColor(int Index) {
+			return GetElement<Vector4dFloat>(m_ColorPointer, Index, m_ColorStride);
+		}
 		void DrawTriangle(int pt1,int pt2,int pt3)
 		{
-			const Vector2dInt* point1 = GetElement<Vector2dInt>(m_VertexPointer,pt1,m_VertexStride);
-			const Vector2dInt* point2 = GetElement<Vector2dInt>(m_VertexPointer,pt2,m_VertexStride);
-			const Vector2dInt* point3 = GetElement<Vector2dInt>(m_VertexPointer,pt3,m_VertexStride);
-
 			int TopPoint	= pt1;
 			int BottomPoint = pt2;
 			int OtherPoint	= pt3;
+			
+			const Vector2dInt* point1 = GetVertexPosition(pt1);
+			const Vector2dInt* point2 = GetVertexPosition(pt2);
+			const Vector2dInt* point3 = GetVertexPosition(pt3);
 
 			if (point1->y > point2->y) {	Math::Swap(TopPoint, BottomPoint); Math::Swap(point1, point2);	}
 			if (point1->y > point3->y) {	Math::Swap(TopPoint, OtherPoint); Math::Swap(point1, point3);	}
@@ -169,13 +291,13 @@ namespace Raster
 		}
 		inline void DrawHalfTriangle(int OtherPoint,int TopPoint,int BottomPoint)
 		{
-			const Vector2dInt* pOther = GetElement<Vector2dInt>(m_VertexPointer,OtherPoint,m_VertexStride);
-			const Vector2dInt* pTopPoint = GetElement<Vector2dInt>(m_VertexPointer,TopPoint,m_VertexStride);
-			const Vector2dInt* pBottom = GetElement<Vector2dInt>(m_VertexPointer,BottomPoint,m_VertexStride);
+			const Vector2dInt* pOther = GetVertexPosition(OtherPoint);
+			const Vector2dInt* pTopPoint = GetVertexPosition(TopPoint);
+			const Vector2dInt* pBottom = GetVertexPosition(BottomPoint);
 
-			const Vector4dFloat* OtherColor = GetElement<Vector4dFloat>(m_ColorPointer, OtherPoint, m_ColorStride);
-			const Vector4dFloat* TopColor = GetElement<Vector4dFloat>(m_ColorPointer, TopPoint, m_ColorStride);
-			const Vector4dFloat* BottomColor = GetElement<Vector4dFloat>(m_ColorPointer, BottomPoint, m_ColorStride);
+			const Vector4dFloat* OtherColor = GetVertexColor(OtherPoint);
+			const Vector4dFloat* TopColor = GetVertexColor(TopPoint);
+			const Vector4dFloat* BottomColor = GetVertexColor(BottomPoint);
 
 			int xOffset1 = pOther->x - pTopPoint->x;
 			int yOffset1 = pOther->y - pTopPoint->y;
@@ -193,13 +315,19 @@ namespace Raster
 			Vector4dFloat LinePointColor2(1.0f,1.0f,1.0f,1.0f);
 
 			
-			Vector4dFloat currentColorT2O = *TopColor;
+			Vector4dFloat currentColorT2O(1.0f,1.0f,1.0f,1.0f);
 			Vector4dFloat byteColorStepT2O;
-			if (OtherColor) byteColorStepT2O = (*OtherColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
+			if (TopColor) {
+				byteColorStepT2O = (*OtherColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
+				currentColorT2O = *TopColor;
+			}
 
-			Vector4dFloat currentColorT2B = *TopColor;
+			Vector4dFloat currentColorT2B(1.0f,1.0f,1.0f,1.0f);
 			Vector4dFloat byteColorStepT2B;
-			if (OtherColor) byteColorStepT2B = (*BottomColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pBottom->y));
+			if (TopColor) {
+				byteColorStepT2B = (*BottomColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pBottom->y));
+				currentColorT2B = *TopColor;
+			}
 
 			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B };
 
