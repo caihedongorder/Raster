@@ -180,7 +180,7 @@ namespace Raster
 			int xOffset1 = pOther->x - pTopPoint->x;
 			int yOffset1 = pOther->y - pTopPoint->y;
 			float currentX1 = (float)pTopPoint->x;
-			float xStep1 = 1.0f*xOffset1 / Math::Abs(yOffset1);
+			float xStep1 = yOffset1 != 0 ? 1.0f*xOffset1 / Math::Abs(yOffset1) : 0;
 
 			int xOffset2 = pBottom->x - pTopPoint->x;
 			int yOffset2 = pBottom->y - pTopPoint->y;
@@ -204,8 +204,8 @@ namespace Raster
 			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B };
 
 			int ydir = pTopPoint->y < pBottom->y ? 1 : -1;
-			int yStart = Math::Clamp(pTopPoint->y, 0, m_Height);
-			int yEnd = Math::Clamp(pOther->y, 0, m_Height) + ydir;
+			int yStart = Math::Clamp(pTopPoint->y, 0, m_Height - 1);
+			int yEnd = Math::Clamp(pOther->y, 0, m_Height - 1) + ydir;
 			if (yStart != pTopPoint->y)
 			{
 				currentColorT2B += byteColorStepT2B * (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pBottom->y));
@@ -272,8 +272,9 @@ namespace Raster
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
 				float currentY = Pt1->y;
 
-				int xStart = Math::Clamp(Pt1->x,0,m_Width);
-				int xEnd = Math::Clamp(Pt2->x, 0, m_Width) + xStep;
+				int xStart = Math::Clamp(Pt1->x, 0, m_Width - 1);
+				int xEnd = Math::Clamp(Pt2->x, 0, m_Width - 1) + xStep;
+				if (xStart != Pt1->x) currentY += yStep * (xStart - Pt1->x);
 
 				Vector4dFloat currentColor;
 				Vector4dFloat byteColorStep;
@@ -309,8 +310,9 @@ namespace Raster
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
 				float currentX = Pt1->x;
 
-				int yStart = Math::Clamp(Pt1->y, 0, m_Height);
-				int yEnd = Math::Clamp(Pt2->y, 0, m_Height) + yStep;
+				int yStart = Math::Clamp(Pt1->y, 0, m_Height - 1);
+				int yEnd = Math::Clamp(Pt2->y, 0, m_Height - 1) + yStep;
+				if (yStep != Pt1->y) currentX += xStep * (yStart - Pt1->y);
 
 				Vector4dFloat currentColor;
 				Vector4dFloat byteColorStep;
