@@ -2,6 +2,7 @@
 #include "RGBA.hpp"
 #include "Math.hpp"
 #include "Vector.hpp"
+#include "Profile.hpp"
 
 namespace Raster
 {
@@ -45,6 +46,7 @@ namespace Raster
 		}
 		void Clear(RGBA InColor = RGBA(0,0,0,0))
 		{
+			AUTO_PROFILE(_T("ColorBuffer.Clear"));
 			for (int i = 0;i < m_Width*m_Height;++i)
 			{
 				m_Buffer[i] = InColor;
@@ -135,7 +137,7 @@ namespace Raster
 			if (point2->y < point3->y) {	Math::Swap(BottomPoint, OtherPoint); Math::Swap(point2, point3);	}
 
 			DrawHalfTriangle(OtherPoint, TopPoint, BottomPoint);
-			//DrawHalfTriangle(OtherPoint, BottomPoint, TopPoint);
+			DrawHalfTriangle(OtherPoint, BottomPoint, TopPoint);
 
 		}
 		template<typename T>
@@ -202,7 +204,16 @@ namespace Raster
 			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B };
 
 			int ydir = pTopPoint->y < pBottom->y ? 1 : -1;
-			for (int y = pTopPoint->y; y != pOther->y + ydir; y += ydir)
+			int yStart = Math::Clamp(pTopPoint->y, 0, m_Height);
+			int yEnd = Math::Clamp(pOther->y, 0, m_Height) + ydir;
+			if (yStart != pTopPoint->y)
+			{
+				currentColorT2B += byteColorStepT2B * (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pBottom->y));
+				currentColorT2O += byteColorStepT2O * (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pOther->y));
+				currentX1 += xStep1 * (yStart - pTopPoint->y);
+				currentX2 += xStep2 * (yStart - pTopPoint->y);
+			}
+			for (int y = yStart ; y != yEnd; y += ydir)
 			{
 				int x1 = Math::Round(currentX1);
 				int x2 = Math::Round(currentX2);
@@ -219,10 +230,14 @@ namespace Raster
 				currentColorT2B += byteColorStepT2B;
 			}
 		}
-		void _SetPixel(unsigned int x, unsigned int y, RGBA InColor)
+		inline void _SetPixel(unsigned int x, unsigned int y, RGBA InColor)
 		{
 			if (x >= m_Width || y >= m_Height) return;
 
+			m_Buffer[y*m_Width + x] = InColor;
+		}
+		inline void _SetPixelEx(int x, int y, RGBA InColor)
+		{
 			m_Buffer[y*m_Width + x] = InColor;
 		}
 		void DrawPoint(const Vector2dInt* pt)
@@ -257,11 +272,21 @@ namespace Raster
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
 				float currentY = Pt1->y;
 
+				int xStart = Math::Clamp(Pt1->x,0,m_Width);
+				int xEnd = Math::Clamp(Pt2->x, 0, m_Width) + xStep;
+
 				Vector4dFloat currentColor;
 				Vector4dFloat byteColorStep;
-				if (Color1) byteColorStep = EvaByteColorStep(Color1, Color2, 1.0f / Math::Abs(Pt2->x - Pt1->x), currentColor);
+				if (Color1) 
+				{
+					float alphaStep = 1.0f / Math::Abs(Pt2->x - Pt1->x);
+					byteColorStep = EvaByteColorStep(Color1, Color2, alphaStep, currentColor);
+					//currentColor += (*Color2 - *Color1)*(1.0f * Math::Abs(xStart - Pt1->x) / Math::Abs(Pt2->x - Pt1->x));
+					currentColor += byteColorStep* (Math::Abs(xStart - Pt1->x)*1.0f ) ;
+				}
 
-				for (int x = Pt1->x; x != Pt2->x + xStep; x += xStep)
+
+				for (int x = xStart; x != xEnd; x += xStep)
 				{
 					int y = Math::Round(currentY);
 
@@ -271,7 +296,7 @@ namespace Raster
 					{
 						color = ByteColor2RGBA(currentColor);
 					}
-					_SetPixel(x, y, color);
+					_SetPixelEx(x, y, color);
 
 					currentY += yStep;
 					currentColor += byteColorStep;
@@ -284,11 +309,18 @@ namespace Raster
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
 				float currentX = Pt1->x;
 
+				int yStart = Math::Clamp(Pt1->y, 0, m_Height);
+				int yEnd = Math::Clamp(Pt2->y, 0, m_Height) + yStep;
+
 				Vector4dFloat currentColor;
 				Vector4dFloat byteColorStep;
-				if (Color1) byteColorStep = EvaByteColorStep(Color1, Color2, 1.0f / Math::Abs(Pt2->y - Pt1->y), currentColor);
+				if (Color1) 
+				{
+					byteColorStep = EvaByteColorStep(Color1, Color2, 1.0f / Math::Abs(Pt2->y - Pt1->y), currentColor);
+					currentColor += byteColorStep* (Math::Abs(yStart - Pt1->y)*1.0f ) ;
+				}
 
-				for (int y = Pt1->y; y != Pt2->y + yStep; y += yStep)
+				for (int y = yStart; y != yEnd; y += yStep)
 				{
 					int x = Math::Round(currentX);
 
@@ -298,7 +330,7 @@ namespace Raster
 					{
 						color = ByteColor2RGBA(currentColor);
 					}
-					_SetPixel(x, y, color);
+					_SetPixelEx(x, y, color);
 
 					currentX += xStep;
 					currentColor += byteColorStep;

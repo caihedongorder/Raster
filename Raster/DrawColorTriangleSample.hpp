@@ -11,9 +11,9 @@ namespace Raster
 			Width = InW;
 			Height = InH;
 
-			triangle[0] = Vector2dInt(0, InH);
-			triangle[1] = Vector2dInt(InW*0.5f, 0);
-			triangle[2] = Vector2dInt(InW, InH);
+			triangle[0] = Vector2dInt(100, 10);
+			triangle[1] = Vector2dInt(10,100);
+			triangle[2] = Vector2dInt(200,100);
 
 			colors[0] = Vector4dFloat(1.0f, 0, 0, 1.0f);
 			colors[1] = Vector4dFloat(0.0f, 1.0f, 0, 1.0f);
@@ -22,7 +22,7 @@ namespace Raster
 
 		void OnRender(ColorBuffer& InColorBuffer)
 		{
-			InColorBuffer.Clear();
+			//AUTO_PROFILE(TEXT("DrawColorTriangle"))
 
 			InColorBuffer.VertexPointer(2, VET_INT, 0, triangle);
 			InColorBuffer.ColorPointer(4, VET_FLOAT, 0, colors);

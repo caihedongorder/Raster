@@ -8,7 +8,6 @@ namespace Raster
 	{
 	public:
 		RenderSample(){}
-
 		virtual void OnRender(ColorBuffer& InColorBuffer){}
 	};
 }

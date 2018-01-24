@@ -104,6 +104,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Precise</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,6 +140,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,7 +161,9 @@
     <ClInclude Include="DrawPointSample.hpp" />
     <ClInclude Include="DrawSample.hpp" />
     <ClInclude Include="DrawTriangleSample.hpp" />
+    <ClInclude Include="FPS.hpp" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="Profile.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RGBA.hpp" />
     <ClInclude Include="stdafx.h" />

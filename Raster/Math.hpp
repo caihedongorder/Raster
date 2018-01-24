@@ -73,6 +73,22 @@ namespace Raster
 			value2 = value1;
 			value1 = tmp;
 		}
+		template<typename T>
+		static inline T Min(T value1, T value2)
+		{
+			return value1 < value2 ? value1 : value2;
+		}
+		template<typename T>
+		static inline T Max(T value1, T value2)
+		{
+			return value1 > value2 ? value1 : value2;
+		}
+		template<typename T>
+		static inline T Clamp(T CurrentValue,T min, T max)
+		{
+			return CurrentValue < min ? min : CurrentValue>max ? max : CurrentValue;
+		}
+
 		static inline float Degree2Radian(float InDegree)
 		{
 			//return InDegree * 0.0174532925f;
