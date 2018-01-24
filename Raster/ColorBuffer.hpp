@@ -33,6 +33,8 @@ namespace Raster
 			const Vector2dInt* pt2;
 			const Vector4dFloat *color1;
 			const Vector4dFloat *color2;
+			const Vector2dFloat *texcoord1;
+			const Vector2dFloat *texcoord2;
 		};
 	public:
 		int GetWidth() const { return m_Width; }
@@ -163,6 +165,14 @@ namespace Raster
 				}
 			}
 		}
+		void SetTexture(Image InTexture) {
+			mTexture = InTexture;
+		}
+		void TexcoordPointer(int ElementCount, EVexterElementType VET, int nStride, void* pTextureCoord)
+		{
+			m_TexcoordPointer = pTextureCoord;
+			m_TexcoordStride = nStride == 0 ? EvaStride(VET,ElementCount) : nStride;
+		}
 		void VertexPointer(int ElementCount, EVexterElementType	VET, int nStride, void* pVertex)
 		{
 			m_VertexPointer = pVertex;
@@ -244,6 +254,9 @@ namespace Raster
 		inline const Vector4dFloat* GetVertexColor(int Index) {
 			return GetElement<Vector4dFloat>(m_ColorPointer, Index, m_ColorStride);
 		}
+		inline const Vector2dFloat* GetTexcoord(int Index) {
+			return GetElement<Vector2dFloat>(m_TexcoordPointer, Index, m_TexcoordStride);
+		}
 		void DrawTriangle(int pt1,int pt2,int pt3)
 		{
 			int TopPoint	= pt1;
@@ -299,6 +312,10 @@ namespace Raster
 			const Vector4dFloat* TopColor = GetVertexColor(TopPoint);
 			const Vector4dFloat* BottomColor = GetVertexColor(BottomPoint);
 
+			const Vector2dFloat* OtherTexcoord = GetTexcoord(OtherPoint);
+			const Vector2dFloat* TopTexcoord = GetTexcoord(TopPoint);
+			const Vector2dFloat* BottomTexcoord = GetTexcoord(BottomPoint);
+
 			int xOffset1 = pOther->x - pTopPoint->x;
 			int yOffset1 = pOther->y - pTopPoint->y;
 			float currentX1 = (float)pTopPoint->x;
@@ -329,15 +346,32 @@ namespace Raster
 				currentColorT2B = *TopColor;
 			}
 
-			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B };
+			Vector2dFloat currentUVT2O;
+			Vector2dFloat UVT2O;
+			if (TopTexcoord) {
+				UVT2O = (*OtherTexcoord - *TopTexcoord) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
+				currentUVT2O = *TopTexcoord;
+			}
+			Vector2dFloat currentUVT2B;
+			Vector2dFloat UVT2B;
+			if (TopTexcoord) {
+				UVT2B = (*BottomTexcoord - *TopTexcoord) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
+				currentUVT2B = *TopTexcoord;
+			}
+
+			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B,&currentUVT2O,&currentUVT2B };
 
 			int ydir = pTopPoint->y < pBottom->y ? 1 : -1;
 			int yStart = Math::Clamp(pTopPoint->y, 0, m_Height - 1);
 			int yEnd = Math::Clamp(pOther->y, 0, m_Height - 1) + ydir;
 			if (yStart != pTopPoint->y)
 			{
-				currentColorT2B += byteColorStepT2B * (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pBottom->y));
-				currentColorT2O += byteColorStepT2O * (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pOther->y));
+				float T2BOffsetScale = (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pBottom->y));
+				float T2OOffsetScale = (1.0f * Math::Abs(yStart - pTopPoint->y) / Math::Abs(pTopPoint->y - pOther->y));
+				currentColorT2B += byteColorStepT2B * T2BOffsetScale;
+				currentColorT2O += byteColorStepT2O * T2OOffsetScale;
+				currentUVT2B += UVT2B * T2BOffsetScale;
+				currentUVT2O += UVT2O * T2OOffsetScale;
 				currentX1 += xStep1 * (yStart - pTopPoint->y);
 				currentX2 += xStep2 * (yStart - pTopPoint->y);
 			}
@@ -356,6 +390,8 @@ namespace Raster
 				currentX2 += xStep2;
 				currentColorT2O += byteColorStepT2O;
 				currentColorT2B += byteColorStepT2B;
+				currentUVT2O += UVT2O;
+				currentUVT2B += UVT2B;
 			}
 		}
 		inline void _SetPixel(unsigned int x, unsigned int y, RGBA InColor)
@@ -389,6 +425,9 @@ namespace Raster
 			auto Pt2 = InParams.pt2;
 			auto Color1 = InParams.color1;
 			auto Color2 = InParams.color2;
+			auto uv1 = InParams.texcoord1;
+			auto uv2 = InParams.texcoord2;
+
 			if (Pt1->x == Pt2->x && Pt1->y == Pt2->y) { _SetPixel(Pt1->x, Pt1->y, RGBA(*Color1)); return; }
 
 			int xOffset = Pt2->x - Pt1->x;
@@ -396,13 +435,19 @@ namespace Raster
 			if (Math::Abs(xOffset) > Math::Abs(yOffset))
 				//x轴长一点 使用X轴为基轴进行栅格化
 			{
+				Vector2dFloat currentUV = *uv1;
+				Vector2dFloat uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(xOffset));
+
 				float yStep = xOffset != 0 ? 1.0f*yOffset / Math::Abs(xOffset) : 0;
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
 				float currentY = Pt1->y;
 
 				int xStart = Math::Clamp(Pt1->x, 0, m_Width - 1);
 				int xEnd = Math::Clamp(Pt2->x, 0, m_Width - 1) + xStep;
-				if (xStart != Pt1->x) currentY += yStep * (xStart - Pt1->x);
+				if (xStart != Pt1->x) {
+					currentY += yStep * (xStart - Pt1->x);
+					currentUV += uvStep * (xStart - Pt1->x);
+				}
 
 				Vector4dFloat currentColor;
 				Vector4dFloat byteColorStep;
@@ -425,22 +470,30 @@ namespace Raster
 					{
 						color = ByteColor2RGBA(currentColor);
 					}
-					_SetPixelEx(x, y, color);
+					RGBA texColor = mTexture.PixelFromUV(currentUV);
+					_SetPixelEx(x, y, texColor);
 
 					currentY += yStep;
 					currentColor += byteColorStep;
+					currentUV += uvStep;
 				}
 			}
 			else
 				//使用Y轴为基轴进行栅格化
 			{
+				Vector2dFloat currentUV = *uv1;
+				Vector2dFloat uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(yOffset));
+
 				float xStep = yOffset != 0 ? 1.0f*xOffset / Math::Abs(yOffset) : 0;
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
 				float currentX = Pt1->x;
 
 				int yStart = Math::Clamp(Pt1->y, 0, m_Height - 1);
 				int yEnd = Math::Clamp(Pt2->y, 0, m_Height - 1) + yStep;
-				if (yStep != Pt1->y) currentX += xStep * (yStart - Pt1->y);
+				if (yStep != Pt1->y) {
+					currentX += xStep * (yStart - Pt1->y);
+					currentUV += uvStep * (yStart - Pt1->y);
+				}
 
 				Vector4dFloat currentColor;
 				Vector4dFloat byteColorStep;
@@ -464,6 +517,7 @@ namespace Raster
 
 					currentX += xStep;
 					currentColor += byteColorStep;
+					currentUV += uvStep;
 
 				}
 			}
@@ -486,12 +540,16 @@ namespace Raster
 		int m_Height;
 		RGBA* m_Buffer;
 		RGBA m_Color;
+		Image mTexture;
 
 		int m_VertexStride = 0;
 		void* m_VertexPointer = nullptr;
 
 		int m_ColorStride = 0;
 		void* m_ColorPointer = nullptr;
+
+		int m_TexcoordStride = 0;
+		void* m_TexcoordPointer = nullptr;
 
 	};
 }

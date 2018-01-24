@@ -18,6 +18,43 @@ namespace Raster
 		{
 			x = y = T();
 		}
+		Vector2d& operator+=(const Vector2d& Other)
+		{
+			this->x += Other.x;
+			this->y += Other.y;
+			return *this;
+		}
+
+		Vector2d& operator-=(const Vector2d& Other)
+		{
+			this->x -= Other.x;
+			this->y -= Other.y;
+			return *this;
+		}
+
+		Vector2d operator+(const Vector2d& Other) const
+		{
+			return Vector2d<T>(this->x + Other.x,
+				this->y + Other.y);
+		}
+		Vector2d operator-(const Vector2d& Other) const
+		{
+			return Vector2d<T>(this->x - Other.x,
+				this->y - Other.y);
+		}
+
+		Vector2d operator*(float InScale) const
+		{
+			return Vector2d<T>(this->x * InScale,
+				this->y * InScale	);
+		}
+
+		Vector2d& operator*=(float InScale)
+		{
+			this->x *= InScale;
+			this->y *= InScale;
+			return *this;
+		}
 	};
 	typedef Vector2d<int> Vector2dInt;
 	typedef Vector2d<float> Vector2dFloat;
@@ -39,6 +76,50 @@ namespace Raster
 		{
 			x = y = z = T();
 		}
+		Vector3d& operator+=(const Vector3d& Other)
+		{
+			this->x += Other.x;
+			this->y += Other.y;
+			this->z += Other.z;
+			return *this;
+		}
+
+		Vector3d& operator-=(const Vector3d& Other)
+		{
+			this->x -= Other.x;
+			this->y -= Other.y;
+			this->z -= Other.z;
+			return *this;
+		}
+
+		Vector3d operator+(const Vector3d& Other) const
+		{
+			return Vector3d<T>(this->x + Other.x,
+				this->y + Other.y,
+				this->z + Other.z);
+		}
+		Vector3d operator-(const Vector3d& Other) const
+		{
+			return Vector3d<T>(this->x - Other.x,
+				this->y - Other.y,
+				this->z - Other.z);
+		}
+
+		Vector3d operator*(float InScale) const
+		{
+			return Vector3d<T>(this->x * InScale,
+				this->y * InScale,
+				this->z * InScale);
+		}
+
+		Vector3d& operator*=(float InScale)
+		{
+			this->x *= InScale;
+			this->y *= InScale;
+			this->z *= InScale;
+			return *this;
+		}
+		
 	};
 
 	typedef Vector3d<int> Vector3dInt;
