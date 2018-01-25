@@ -15,9 +15,9 @@ namespace Raster
 			triangle[1] = int2(0,InH);
 			triangle[2] = int2(InW,InH);
 
-			colors[0] = float4(1.0f, 0, 0, 1.0f);
-			colors[1] = float4(0.0f, 1.0f, 0, 1.0f);
-			colors[2] = float4(0.0f, 0, 1.0f, 1.0f);
+			colors[0] = float4(0.5f, 0.5f, 0.5f, 1.0f);
+			colors[1] = float4(0.5f, 0.5f, 0.5f, 1.0f);
+			colors[2] = float4(0.5f, 0.5f, 0.5f, 1.0f);
 
 			texcoords[0] = float2(0.5f,0.0f);			texcoords[1] = float2(0.0f,1.0f);			texcoords[2] = float2(1.0f,1.0f);
 
@@ -34,7 +34,7 @@ namespace Raster
 			InColorBuffer.SetTexture(Tex);
 
 			InColorBuffer.VertexPointer(2, VET_INT, 0, triangle);
-			//InColorBuffer.ColorPointer(4, VET_FLOAT, 0, colors);
+			InColorBuffer.ColorPointer(4, VET_FLOAT, 0, colors);
 			InColorBuffer.TexcoordPointer(2, VET_FLOAT, 0, texcoords);
 			
 			InColorBuffer.DrawArrays(DM_TRIANGLS, 0, 3);
