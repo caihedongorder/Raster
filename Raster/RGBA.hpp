@@ -27,7 +27,7 @@ namespace Raster
 			B = Other.B;
 			A = Other.A;
 		}
-		RGBA(const Vector4dFloat& InColorf)
+		RGBA(const float4& InColorf)
 		{
 			R = (float)InColorf.x*255;
 			G = (float)InColorf.y*255;

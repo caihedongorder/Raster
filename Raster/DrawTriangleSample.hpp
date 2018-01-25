@@ -11,12 +11,12 @@ namespace Raster
 			Width = InW;
 			Height = InH;
 
-			triangle1[0] = Vector2dInt(0, 100);
-			triangle1[1] = Vector2dInt(100, 100);
-			triangle1[2] = Vector2dInt(50, 0);
+			triangle1[0] = int2(0, 100);
+			triangle1[1] = int2(100, 100);
+			triangle1[2] = int2(50, 0);
 
-			triangle2[0] = Vector2dInt(100, 100);			triangle2[1] = Vector2dInt(150, 0);			triangle2[2] = Vector2dInt(200, 200);
-			triangle3[0] = Vector2dInt(200, 10);			triangle3[1] = Vector2dInt(600, 10);			triangle3[2] = Vector2dInt(400, 0);
+			triangle2[0] = int2(100, 100);			triangle2[1] = int2(150, 0);			triangle2[2] = int2(200, 200);
+			triangle3[0] = int2(200, 10);			triangle3[1] = int2(600, 10);			triangle3[2] = int2(400, 0);
 		}
 
 		void OnRender(ColorBuffer& InColorBuffer)
@@ -32,8 +32,8 @@ namespace Raster
 		}
 	private:
 		int Width, Height;
-		Vector2dInt triangle1[3];
-		Vector2dInt triangle2[3];
-		Vector2dInt triangle3[3];
+		int2 triangle1[3];
+		int2 triangle2[3];
+		int2 triangle3[3];
 	};
 }

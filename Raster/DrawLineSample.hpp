@@ -16,21 +16,21 @@ namespace Raster
 		{
 			InColorBuffer.Clear();
 
-			Vector2dInt points[] = {
-				Vector2dInt(420, 300),Vector2dInt(620, 300),
-				Vector2dInt(420, 300),Vector2dInt(620, 400),
-				Vector2dInt(420, 300),Vector2dInt(620, 200),
-				Vector2dInt(420, 300),Vector2dInt(220, 300),
-				Vector2dInt(420, 300),Vector2dInt(220, 400),
-				Vector2dInt(420, 300),Vector2dInt(220, 200),
+			int2 points[] = {
+				int2(420, 300),int2(620, 300),
+				int2(420, 300),int2(620, 400),
+				int2(420, 300),int2(620, 200),
+				int2(420, 300),int2(220, 300),
+				int2(420, 300),int2(220, 400),
+				int2(420, 300),int2(220, 200),
 
 
-				Vector2dInt(420, 300),Vector2dInt(420, 600),
-				Vector2dInt(420, 300),Vector2dInt(620, 600),
-				Vector2dInt(420, 300),Vector2dInt(220, 600),
-				Vector2dInt(420, 300),Vector2dInt(220, 0),
-				Vector2dInt(420, 300),Vector2dInt(620, 0),
-				Vector2dInt(420, 300),Vector2dInt(420, 0),
+				int2(420, 300),int2(420, 600),
+				int2(420, 300),int2(620, 600),
+				int2(420, 300),int2(220, 600),
+				int2(420, 300),int2(220, 0),
+				int2(420, 300),int2(620, 0),
+				int2(420, 300),int2(420, 0),
 			};
 
 			InColorBuffer.VertexPointer(2, VET_INT, 0, points);

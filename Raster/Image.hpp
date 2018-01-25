@@ -33,8 +33,12 @@ namespace Raster {
 			return data[y*m_Width + x];
 		}
 	
-		inline RGBA PixelFromUV(const Vector2dFloat InUV) {
+		inline RGBA PixelFromUV(const float2 InUV) {
 			return PixelAt(InUV.x*m_Width, InUV.y*m_Height);
+		}
+		inline bool IsValid() const {
+			return m_Width != 0 && m_Height != 0 &&
+				m_Data.get();
 		}
 		static Image LoadFromFile(const char* fileName)
 		{

@@ -12,13 +12,13 @@ namespace Raster
 			Width = InW;
 			Height = InH;
 
-			triangle[0] = Vector2dInt(InW * 0.5f,0);
-			triangle[1] = Vector2dInt(0,InH);
-			triangle[2] = Vector2dInt(InW,InH);
+			triangle[0] = int2(InW * 0.5f,0);
+			triangle[1] = int2(0,InH);
+			triangle[2] = int2(InW,InH);
 
-			colors[0] = Vector4dFloat(1.0f, 0, 0, 1.0f);
-			colors[1] = Vector4dFloat(0.0f, 1.0f, 0, 1.0f);
-			colors[2] = Vector4dFloat(0.0f, 0, 1.0f, 1.0f);
+			colors[0] = float4(1.0f, 0, 0, 1.0f);
+			colors[1] = float4(0.0f, 1.0f, 0, 1.0f);
+			colors[2] = float4(0.0f, 0, 1.0f, 1.0f);
 
 			Img = Image::LoadFromFile("images/tiger.png");
 			ImgBG = Image::LoadFromFile("images/pubu.jpg");
@@ -41,8 +41,8 @@ namespace Raster
 		}
 	private:
 		int Width, Height;
-		Vector2dInt triangle[3];
-		Vector4dFloat colors[3];
+		int2 triangle[3];
+		float4 colors[3];
 		Image ImgBG;
 		Image Img;
 	};

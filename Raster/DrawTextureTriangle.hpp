@@ -11,15 +11,15 @@ namespace Raster
 			Width = InW;
 			Height = InH;
 
-			triangle[0] = Vector2dInt(InW * 0.5f,0);
-			triangle[1] = Vector2dInt(0,InH);
-			triangle[2] = Vector2dInt(InW,InH);
+			triangle[0] = int2(InW * 0.5f,0);
+			triangle[1] = int2(0,InH);
+			triangle[2] = int2(InW,InH);
 
-			colors[0] = Vector4dFloat(1.0f, 0, 0, 1.0f);
-			colors[1] = Vector4dFloat(0.0f, 1.0f, 0, 1.0f);
-			colors[2] = Vector4dFloat(0.0f, 0, 1.0f, 1.0f);
+			colors[0] = float4(1.0f, 0, 0, 1.0f);
+			colors[1] = float4(0.0f, 1.0f, 0, 1.0f);
+			colors[2] = float4(0.0f, 0, 1.0f, 1.0f);
 
-			texcoords[0] = Vector2dFloat(0.5f,0.0f);			texcoords[1] = Vector2dFloat(0.0f,1.0f);			texcoords[2] = Vector2dFloat(1.0f,1.0f);
+			texcoords[0] = float2(0.5f,0.0f);			texcoords[1] = float2(0.0f,1.0f);			texcoords[2] = float2(1.0f,1.0f);
 
 			Tex = Image::LoadFromFile("images/pubu.jpg");
 		
@@ -41,9 +41,9 @@ namespace Raster
 		}
 	private:
 		int Width, Height;
-		Vector2dInt triangle[3];
-		Vector4dFloat colors[3];
-		Vector2dFloat texcoords[3];
+		int2 triangle[3];
+		float4 colors[3];
+		float2 texcoords[3];
 		Image Tex;
 	};
 }

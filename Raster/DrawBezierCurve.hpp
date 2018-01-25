@@ -39,10 +39,10 @@ namespace Raster
 	private:
 		int Width, Height;
 		int pointCount = 100;
-		Vector2dInt P0;
-		Vector2dInt P1;
-		Vector2dInt P2;
-		Vector2dInt P3;
-		Vector2dInt points[100];
+		int2 P0;
+		int2 P1;
+		int2 P2;
+		int2 P3;
+		int2 points[100];
 	};
 }

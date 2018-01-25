@@ -56,8 +56,8 @@ namespace Raster
 			return *this;
 		}
 	};
-	typedef Vector2d<int> Vector2dInt;
-	typedef Vector2d<float> Vector2dFloat;
+	typedef Vector2d<int> int2;
+	typedef Vector2d<float> float2;
 	
 	template<typename T>
 	class Vector3d
@@ -122,8 +122,8 @@ namespace Raster
 		
 	};
 
-	typedef Vector3d<int> Vector3dInt;
-	typedef Vector3d<float> Vector3dFloat;
+	typedef Vector3d<int> int3;
+	typedef Vector3d<float> float3;
 
 	template<typename T>
 	class Vector4d
@@ -193,6 +193,6 @@ namespace Raster
 			return *this;
 		}
 	};
-	typedef Vector4d<int> Vector4dInt;
-	typedef Vector4d<float> Vector4dFloat;
+	typedef Vector4d<int> int4;
+	typedef Vector4d<float> float4;
 }

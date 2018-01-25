@@ -29,12 +29,12 @@ namespace Raster
 	private:
 		struct DrawLineParams 
 		{
-			const Vector2dInt* pt1;
-			const Vector2dInt* pt2;
-			const Vector4dFloat *color1;
-			const Vector4dFloat *color2;
-			const Vector2dFloat *texcoord1;
-			const Vector2dFloat *texcoord2;
+			const int2* pt1;
+			const int2* pt2;
+			const float4 *color1;
+			const float4 *color2;
+			const float2 *texcoord1;
+			const float2 *texcoord2;
 		};
 	public:
 		int GetWidth() const { return m_Width; }
@@ -75,7 +75,7 @@ namespace Raster
 			int xEnd = Math::Clamp(destX + destWidth,	0, m_Width - 1);
 			int yEnd = Math::Clamp(destY + destHeight,  0, m_Height - 1);
 
-			Vector2dFloat StartUV;
+			float2 StartUV;
 			float uStep = 1.0f / destWidth;
 			float vStep = 1.0f / destHeight;
 
@@ -185,15 +185,15 @@ namespace Raster
 		}
 		void DrawArrays(EDrawMode InDrawMode, int FirstIndex, int PointCount)
 		{
-			Vector2dInt* Points = (Vector2dInt*)(m_VertexPointer);
-			Vector4dFloat* Colors = (Vector4dFloat*)(m_ColorPointer);
+			int2* Points = (int2*)(m_VertexPointer);
+			float4* Colors = (float4*)(m_ColorPointer);
 			switch (InDrawMode)
 			{
 			case Raster::DM_POINTS:
 				{
 					for (int i = 0;i<PointCount;++i)
 					{
-						DrawPoint(GetElement<Vector2dInt>(Points,i,m_VertexStride));
+						DrawPoint(GetElement<int2>(Points,i,m_VertexStride));
 					}
 				}
 				break;
@@ -243,19 +243,19 @@ namespace Raster
 			}
 		}
 	private:
-		inline const Vector2dInt* GetVertexPosition(int Index) {
-			return GetElement<Vector2dInt>(m_VertexPointer, Index, m_VertexStride);
+		inline const int2* GetVertexPosition(int Index) {
+			return GetElement<int2>(m_VertexPointer, Index, m_VertexStride);
 		}
 		inline RGBA PixelAt(int x, int y) {
 			x = Math::Clamp(x, 0, m_Width);
 			y = Math::Clamp(y, 0, m_Height);
 			return m_Buffer[y*m_Width + x];
 		}
-		inline const Vector4dFloat* GetVertexColor(int Index) {
-			return GetElement<Vector4dFloat>(m_ColorPointer, Index, m_ColorStride);
+		inline const float4* GetVertexColor(int Index) {
+			return GetElement<float4>(m_ColorPointer, Index, m_ColorStride);
 		}
-		inline const Vector2dFloat* GetTexcoord(int Index) {
-			return GetElement<Vector2dFloat>(m_TexcoordPointer, Index, m_TexcoordStride);
+		inline const float2* GetTexcoord(int Index) {
+			return GetElement<float2>(m_TexcoordPointer, Index, m_TexcoordStride);
 		}
 		void DrawTriangle(int pt1,int pt2,int pt3)
 		{
@@ -263,9 +263,9 @@ namespace Raster
 			int BottomPoint = pt2;
 			int OtherPoint	= pt3;
 			
-			const Vector2dInt* point1 = GetVertexPosition(pt1);
-			const Vector2dInt* point2 = GetVertexPosition(pt2);
-			const Vector2dInt* point3 = GetVertexPosition(pt3);
+			const int2* point1 = GetVertexPosition(pt1);
+			const int2* point2 = GetVertexPosition(pt2);
+			const int2* point3 = GetVertexPosition(pt3);
 
 			if (point1->y > point2->y) {	Math::Swap(TopPoint, BottomPoint); Math::Swap(point1, point2);	}
 			if (point1->y > point3->y) {	Math::Swap(TopPoint, OtherPoint); Math::Swap(point1, point3);	}
@@ -304,17 +304,17 @@ namespace Raster
 		}
 		inline void DrawHalfTriangle(int OtherPoint,int TopPoint,int BottomPoint)
 		{
-			const Vector2dInt* pOther = GetVertexPosition(OtherPoint);
-			const Vector2dInt* pTopPoint = GetVertexPosition(TopPoint);
-			const Vector2dInt* pBottom = GetVertexPosition(BottomPoint);
+			const int2* pOther = GetVertexPosition(OtherPoint);
+			const int2* pTopPoint = GetVertexPosition(TopPoint);
+			const int2* pBottom = GetVertexPosition(BottomPoint);
 
-			const Vector4dFloat* OtherColor = GetVertexColor(OtherPoint);
-			const Vector4dFloat* TopColor = GetVertexColor(TopPoint);
-			const Vector4dFloat* BottomColor = GetVertexColor(BottomPoint);
+			const float4* OtherColor = GetVertexColor(OtherPoint);
+			const float4* TopColor = GetVertexColor(TopPoint);
+			const float4* BottomColor = GetVertexColor(BottomPoint);
 
-			const Vector2dFloat* OtherTexcoord = GetTexcoord(OtherPoint);
-			const Vector2dFloat* TopTexcoord = GetTexcoord(TopPoint);
-			const Vector2dFloat* BottomTexcoord = GetTexcoord(BottomPoint);
+			const float2* OtherTexcoord = GetTexcoord(OtherPoint);
+			const float2* TopTexcoord = GetTexcoord(TopPoint);
+			const float2* BottomTexcoord = GetTexcoord(BottomPoint);
 
 			int xOffset1 = pOther->x - pTopPoint->x;
 			int yOffset1 = pOther->y - pTopPoint->y;
@@ -326,34 +326,34 @@ namespace Raster
 			float currentX2 = pTopPoint->x;
 			float xStep2 = 1.0f*xOffset2 / Math::Abs(yOffset2);
 
-			Vector2dInt LinePoint1;
-			Vector2dInt LinePoint2;
-			Vector4dFloat LinePointColor1(1.0f,1.0f,1.0f,1.0f);
-			Vector4dFloat LinePointColor2(1.0f,1.0f,1.0f,1.0f);
+			int2 LinePoint1;
+			int2 LinePoint2;
+			float4 LinePointColor1(1.0f,1.0f,1.0f,1.0f);
+			float4 LinePointColor2(1.0f,1.0f,1.0f,1.0f);
 
 			
-			Vector4dFloat currentColorT2O(1.0f,1.0f,1.0f,1.0f);
-			Vector4dFloat byteColorStepT2O;
+			float4 currentColorT2O(1.0f,1.0f,1.0f,1.0f);
+			float4 byteColorStepT2O;
 			if (TopColor) {
 				byteColorStepT2O = (*OtherColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
 				currentColorT2O = *TopColor;
 			}
 
-			Vector4dFloat currentColorT2B(1.0f,1.0f,1.0f,1.0f);
-			Vector4dFloat byteColorStepT2B;
+			float4 currentColorT2B(1.0f,1.0f,1.0f,1.0f);
+			float4 byteColorStepT2B;
 			if (TopColor) {
 				byteColorStepT2B = (*BottomColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pBottom->y));
 				currentColorT2B = *TopColor;
 			}
 
-			Vector2dFloat currentUVT2O;
-			Vector2dFloat UVT2O;
+			float2 currentUVT2O;
+			float2 UVT2O;
 			if (TopTexcoord) {
 				UVT2O = (*OtherTexcoord - *TopTexcoord) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
 				currentUVT2O = *TopTexcoord;
 			}
-			Vector2dFloat currentUVT2B;
-			Vector2dFloat UVT2B;
+			float2 currentUVT2B;
+			float2 UVT2B;
 			if (TopTexcoord) {
 				UVT2B = (*BottomTexcoord - *TopTexcoord) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
 				currentUVT2B = *TopTexcoord;
@@ -404,17 +404,17 @@ namespace Raster
 		{
 			m_Buffer[y*m_Width + x] = InColor;
 		}
-		void DrawPoint(const Vector2dInt* pt)
+		void DrawPoint(const int2* pt)
 		{
 			_SetPixel(pt->x, pt->y, m_Color);
 		}
 		void DrawLine(int pt1,int pt2)
 		{
-			const Vector2dInt* Pt1 = GetElement<Vector2dInt>(m_VertexPointer, pt1, m_VertexStride);
-			const Vector2dInt* Pt2 = GetElement<Vector2dInt>(m_VertexPointer, pt2, m_VertexStride);
+			const int2* Pt1 = GetElement<int2>(m_VertexPointer, pt1, m_VertexStride);
+			const int2* Pt2 = GetElement<int2>(m_VertexPointer, pt2, m_VertexStride);
 
-			const Vector4dFloat* Color1 = GetElement<Vector4dFloat>(m_ColorPointer, pt1, m_ColorStride);
-			const Vector4dFloat* Color2 = GetElement<Vector4dFloat>(m_ColorPointer, pt2, m_ColorStride);
+			const float4* Color1 = GetElement<float4>(m_ColorPointer, pt1, m_ColorStride);
+			const float4* Color2 = GetElement<float4>(m_ColorPointer, pt2, m_ColorStride);
 
 			DrawLineImpl({ Pt1, Pt2, Color1, Color2 });
 		}
@@ -435,8 +435,8 @@ namespace Raster
 			if (Math::Abs(xOffset) > Math::Abs(yOffset))
 				//x轴长一点 使用X轴为基轴进行栅格化
 			{
-				Vector2dFloat currentUV = *uv1;
-				Vector2dFloat uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(xOffset));
+				float2 currentUV = *uv1;
+				float2 uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(xOffset));
 
 				float yStep = xOffset != 0 ? 1.0f*yOffset / Math::Abs(xOffset) : 0;
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
@@ -449,8 +449,8 @@ namespace Raster
 					currentUV += uvStep * (xStart - Pt1->x);
 				}
 
-				Vector4dFloat currentColor;
-				Vector4dFloat byteColorStep;
+				float4 currentColor;
+				float4 byteColorStep;
 				if (Color1) 
 				{
 					float alphaStep = 1.0f / Math::Abs(Pt2->x - Pt1->x);
@@ -470,8 +470,13 @@ namespace Raster
 					{
 						color = ByteColor2RGBA(currentColor);
 					}
-					RGBA texColor = mTexture.PixelFromUV(currentUV);
-					_SetPixelEx(x, y, texColor);
+					RGBA texColor;
+					if (mTexture.IsValid())
+					{
+						texColor = mTexture.PixelFromUV(currentUV);
+						color = texColor ;
+					}
+					_SetPixelEx(x, y, color);
 
 					currentY += yStep;
 					currentColor += byteColorStep;
@@ -481,8 +486,8 @@ namespace Raster
 			else
 				//使用Y轴为基轴进行栅格化
 			{
-				Vector2dFloat currentUV = *uv1;
-				Vector2dFloat uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(yOffset));
+				float2 currentUV = *uv1;
+				float2 uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(yOffset));
 
 				float xStep = yOffset != 0 ? 1.0f*xOffset / Math::Abs(yOffset) : 0;
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
@@ -495,8 +500,8 @@ namespace Raster
 					currentUV += uvStep * (yStart - Pt1->y);
 				}
 
-				Vector4dFloat currentColor;
-				Vector4dFloat byteColorStep;
+				float4 currentColor;
+				float4 byteColorStep;
 				if (Color1) 
 				{
 					byteColorStep = EvaByteColorStep(Color1, Color2, 1.0f / Math::Abs(Pt2->y - Pt1->y), currentColor);
@@ -513,6 +518,12 @@ namespace Raster
 					{
 						color = ByteColor2RGBA(currentColor);
 					}
+					RGBA texColor;
+					if (mTexture.IsValid())
+					{
+						texColor = mTexture.PixelFromUV(currentUV);
+						color = texColor ;
+					}
 					_SetPixelEx(x, y, color);
 
 					currentX += xStep;
@@ -523,14 +534,14 @@ namespace Raster
 			}
 		}
 
-		inline RGBA ByteColor2RGBA(const Vector4dFloat& InByteColor)
+		inline RGBA ByteColor2RGBA(const float4& InByteColor)
 		{
 			return RGBA(Math::Round(InByteColor.x),Math::Round(InByteColor.y),Math::Round(InByteColor.z),Math::Round(InByteColor.w));
 		}
-		inline Vector4dFloat EvaByteColorStep(const Vector4dFloat* Color1, const Vector4dFloat* Color2, float AlphaStep,Vector4dFloat& OutCurrentByteColor)
+		inline float4 EvaByteColorStep(const float4* Color1, const float4* Color2, float AlphaStep,float4& OutCurrentByteColor)
 		{
-			Vector4dFloat byteColor1 = Vector4dFloat(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
-			Vector4dFloat byteColor2 = Vector4dFloat(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
+			float4 byteColor1 = float4(Color1->x*255.0f, Color1->y*255.0f, Color1->z*255.0f, Color1->w*255.0f);
+			float4 byteColor2 = float4(Color2->x*255.0f, Color2->y*255.0f, Color2->z*255.0f, Color2->w*255.0f);
 			OutCurrentByteColor = byteColor1;
 			return (byteColor2 - byteColor1)*AlphaStep;
 		}

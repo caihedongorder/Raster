@@ -11,11 +11,11 @@ namespace Raster
 			Width = InW;
 			Height = InH;
 
-			Vector2dInt center = { 100,100 };
+			int2 center = { 100,100 };
 			float Radius = 80;
 			for (int i = 0 ; i < 360 ; ++i )
 			{
-				points[i] = Vector2dInt(center.x + Radius * Math::Cos(Math::Degree2Radian(i)), center.y + Radius * Math::Sin(Math::Degree2Radian(i)));
+				points[i] = int2(center.x + Radius * Math::Cos(Math::Degree2Radian(i)), center.y + Radius * Math::Sin(Math::Degree2Radian(i)));
 			}
 		}
 
@@ -28,6 +28,6 @@ namespace Raster
 		}
 	private:
 		int Width, Height;
-		Vector2dInt points[360];
+		int2 points[360];
 	};
 }
