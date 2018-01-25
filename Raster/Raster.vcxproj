@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../Dependencies/mathfu;$(ProjectDir)/../Dependencies/freeimage;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../Dependencies/mathfu;$(ProjectDir)/../Dependencies/freeimage;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)/../Dependencies/freeimage;$(IncludePath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

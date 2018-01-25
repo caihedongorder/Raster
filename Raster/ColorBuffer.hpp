@@ -33,6 +33,7 @@ namespace Raster
 			const int2* pt2;
 			const float4 *color1;
 			const float4 *color2;
+			bool hasColor;
 			const float2 *texcoord1;
 			const float2 *texcoord2;
 		};
@@ -75,7 +76,7 @@ namespace Raster
 			int xEnd = Math::Clamp(destX + destWidth,	0, m_Width - 1);
 			int yEnd = Math::Clamp(destY + destHeight,  0, m_Height - 1);
 
-			float2 StartUV;
+			float2 StartUV(0,0);
 			float uStep = 1.0f / destWidth;
 			float vStep = 1.0f / destHeight;
 
@@ -330,36 +331,36 @@ namespace Raster
 			int2 LinePoint2;
 			float4 LinePointColor1(1.0f,1.0f,1.0f,1.0f);
 			float4 LinePointColor2(1.0f,1.0f,1.0f,1.0f);
+			float4 currentColorT2O(1.0f,1.0f,1.0f,1.0f);
+			float4 currentColorT2B(1.0f,1.0f,1.0f,1.0f);
+			float2 currentUVT2O;
+			float2 currentUVT2B;
+			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B,TopColor != 0,&currentUVT2O,&currentUVT2B };
 
 			
-			float4 currentColorT2O(1.0f,1.0f,1.0f,1.0f);
 			float4 byteColorStepT2O;
 			if (TopColor) {
 				byteColorStepT2O = (*OtherColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
 				currentColorT2O = *TopColor;
 			}
 
-			float4 currentColorT2B(1.0f,1.0f,1.0f,1.0f);
 			float4 byteColorStepT2B;
 			if (TopColor) {
 				byteColorStepT2B = (*BottomColor - *TopColor) * (1.0f / Math::Abs(pTopPoint->y - pBottom->y));
 				currentColorT2B = *TopColor;
 			}
 
-			float2 currentUVT2O;
 			float2 UVT2O;
 			if (TopTexcoord) {
 				UVT2O = (*OtherTexcoord - *TopTexcoord) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
 				currentUVT2O = *TopTexcoord;
 			}
-			float2 currentUVT2B;
 			float2 UVT2B;
 			if (TopTexcoord) {
 				UVT2B = (*BottomTexcoord - *TopTexcoord) * (1.0f / Math::Abs(pTopPoint->y - pOther->y));
 				currentUVT2B = *TopTexcoord;
 			}
 
-			DrawLineParams drawLineParam = { &LinePoint1,&LinePoint2,&currentColorT2O,&currentColorT2B,&currentUVT2O,&currentUVT2B };
 
 			int ydir = pTopPoint->y < pBottom->y ? 1 : -1;
 			int yStart = Math::Clamp(pTopPoint->y, 0, m_Height - 1);
@@ -435,8 +436,13 @@ namespace Raster
 			if (Math::Abs(xOffset) > Math::Abs(yOffset))
 				//x轴长一点 使用X轴为基轴进行栅格化
 			{
-				float2 currentUV = *uv1;
-				float2 uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(xOffset));
+				float2 currentUV;
+				float2 uvStep;
+				if(uv1&&mTexture.IsValid())
+				{
+					currentUV= *uv1;
+					uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(xOffset));
+				}
 
 				float yStep = xOffset != 0 ? 1.0f*yOffset / Math::Abs(xOffset) : 0;
 				int xStep = Pt2->x > Pt1->x ? 1 : -1;
@@ -446,7 +452,7 @@ namespace Raster
 				int xEnd = Math::Clamp(Pt2->x, 0, m_Width - 1) + xStep;
 				if (xStart != Pt1->x) {
 					currentY += yStep * (xStart - Pt1->x);
-					currentUV += uvStep * (xStart - Pt1->x);
+					currentUV += uvStep * float(xStart - Pt1->x);
 				}
 
 				float4 currentColor;
@@ -466,7 +472,7 @@ namespace Raster
 
 					RGBA color = m_Color;
 
-					if (Color1)
+					if (InParams.hasColor)
 					{
 						color = ByteColor2RGBA(currentColor);
 					}
@@ -486,8 +492,13 @@ namespace Raster
 			else
 				//使用Y轴为基轴进行栅格化
 			{
-				float2 currentUV = *uv1;
-				float2 uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(yOffset));
+				float2 currentUV ;
+				float2 uvStep ;
+				if (uv1)
+				{
+					currentUV = *uv1;
+					uvStep = (*uv2 - *uv1)*(1.0f / Math::Abs(yOffset));
+				}
 
 				float xStep = yOffset != 0 ? 1.0f*xOffset / Math::Abs(yOffset) : 0;
 				int yStep = Pt2->y > Pt1->y ? 1 : -1;
@@ -497,7 +508,7 @@ namespace Raster
 				int yEnd = Math::Clamp(Pt2->y, 0, m_Height - 1) + yStep;
 				if (yStep != Pt1->y) {
 					currentX += xStep * (yStart - Pt1->y);
-					currentUV += uvStep * (yStart - Pt1->y);
+					currentUV += uvStep * float(yStart - Pt1->y);
 				}
 
 				float4 currentColor;
@@ -514,7 +525,7 @@ namespace Raster
 
 					RGBA color = m_Color;
 
-					if (Color1)
+					if (InParams.hasColor)
 					{
 						color = ByteColor2RGBA(currentColor);
 					}

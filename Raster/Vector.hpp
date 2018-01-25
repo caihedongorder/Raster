@@ -1,4 +1,5 @@
 #pragma once
+#include <mathfu/glsl_mappings.h>
 
 namespace Raster
 {
@@ -56,8 +57,11 @@ namespace Raster
 			return *this;
 		}
 	};
-	typedef Vector2d<int> int2;
-	typedef Vector2d<float> float2;
+	//typedef Vector2d<int> int2;
+	//typedef Vector2d<float> float2;
+
+	typedef mathfu::Vector<int, 2> int2;
+	typedef mathfu::Vector<float, 2> float2;
 	
 	template<typename T>
 	class Vector3d
@@ -122,8 +126,12 @@ namespace Raster
 		
 	};
 
-	typedef Vector3d<int> int3;
-	typedef Vector3d<float> float3;
+	//typedef Vector3d<int> int3;
+	//typedef Vector3d<float> float3;
+
+
+	typedef mathfu::Vector<int, 3> int3;
+	typedef mathfu::Vector<float, 3> float3;
 
 	template<typename T>
 	class Vector4d
@@ -200,6 +208,9 @@ namespace Raster
 			return *this;
 		}
 	};
-	typedef Vector4d<int> int4;
-	typedef Vector4d<float> float4;
+	//typedef Vector4d<int> int4;
+	//typedef Vector4d<float> float4;
+
+	typedef mathfu::Vector<int, 4> int4;
+	typedef mathfu::Vector<float, 4> float4;
 }
