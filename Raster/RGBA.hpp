@@ -34,8 +34,22 @@ namespace Raster
 			B = (float)InColorf.z*255;
 			A = (float)InColorf.w*255;
 		}
+		float4 tofloat4() const {
+			return float4(R / 255.0f, G / 255.0f,B / 255.0f, A / 255.0f);
+		}
 		bool operator==(const RGBA& InOtherColor) { return Color == InOtherColor.Color; }
 		bool operator!=(const RGBA& InOtherColor) { return Color != InOtherColor.Color; }
+
+		inline RGBA Multipy(const RGBA& InOther) const
+		{
+			float4 clr1 = tofloat4();
+			float4 clr2 = InOther.tofloat4();
+			return RGBA(clr1*clr2);
+		}
+		RGBA operator* (const RGBA& InOther) const
+		{
+			return Multipy(InOther);
+		}
 
 	public:
 		union 

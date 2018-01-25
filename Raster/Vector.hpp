@@ -183,6 +183,13 @@ namespace Raster
 				this->z * InScale,
 				this->w * InScale);
 		}
+		Vector4d operator*(const Vector4d& Other) const
+		{
+			return Vector4d<T>(this->x * Other.x,
+				this->y * Other.y,
+				this->z * Other.z,
+				this->w * Other.w);
+		}
 
 		Vector4d& operator*=(float InScale)
 		{

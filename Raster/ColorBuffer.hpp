@@ -474,7 +474,7 @@ namespace Raster
 					if (mTexture.IsValid())
 					{
 						texColor = mTexture.PixelFromUV(currentUV);
-						color = texColor ;
+						color = texColor*color ;
 					}
 					_SetPixelEx(x, y, color);
 
