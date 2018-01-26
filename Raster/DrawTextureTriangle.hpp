@@ -19,7 +19,9 @@ namespace Raster
 			colors[1] = float4(0.5f, 0.5f, 0.5f, 1.0f);
 			colors[2] = float4(0.5f, 0.5f, 0.5f, 1.0f);
 
-			texcoords[0] = float2(0.5f,0.0f);			texcoords[1] = float2(0.0f,1.0f);			texcoords[2] = float2(1.0f,1.0f);
+			texcoords[0] = float2(0.5f,0.0f);
+			texcoords[1] = float2(0.0f,1.0f);
+			texcoords[2] = float2(1.0f,1.0f);
 
 			Tex = Image::LoadFromFile("images/pubu.jpg");
 		
