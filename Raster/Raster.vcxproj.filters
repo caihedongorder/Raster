@@ -87,6 +87,12 @@
     <ClInclude Include="OpenGLDrawQuad.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLViewport.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLTranslate.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

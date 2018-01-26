@@ -179,6 +179,8 @@
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="OpenGLDrawQuad.hpp" />
+    <ClInclude Include="OpenGLTranslate.hpp" />
+    <ClInclude Include="OpenGLViewport.hpp" />
     <ClInclude Include="Profile.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RGBA.hpp" />
