@@ -183,10 +183,13 @@
     <ClInclude Include="DrawTextureTriangle.hpp" />
     <ClInclude Include="DrawTriangleSample.hpp" />
     <ClInclude Include="FPS.hpp" />
+    <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="OpenGLDrawCube.hpp" />
     <ClInclude Include="OpenGLDrawQuad.hpp" />
+    <ClInclude Include="OpenGLDrawTexture.hpp" />
     <ClInclude Include="OpenGLTranslate.hpp" />
     <ClInclude Include="OpenGLViewport.hpp" />
     <ClInclude Include="Profile.hpp" />

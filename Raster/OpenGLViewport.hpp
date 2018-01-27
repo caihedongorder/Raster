@@ -16,7 +16,7 @@ namespace OpenGL
 			glMatrixMode(GL_PROJECTION);
 			glOrtho(0, mWidth, mHeight, 0, -1, 1.0f);
 		}
-		void OnRender(){
+		void OnRender(float InDeltaTime){
 			//DrawRect(mWidth*0.1f, mHeight*0.1f, mWidth*0.25f, mHeight*0.25f,mathfu::vec4(1,0,0,0));
 			//DrawRect(mWidth*0.1f, mHeight*0.65f, mWidth*0.25f, mHeight*0.25f,mathfu::vec4(0,1,0,0));
 			//DrawRect(mWidth*0.65f, mHeight*0.1f, mWidth*0.25f, mHeight*0.25f,mathfu::vec4(0,0,1,0));

@@ -31,7 +31,7 @@ namespace OpenGL
 			glMatrixMode(GL_PROJECTION);
 			glOrtho(0, mWidth, mHeight, 0, -1, 1.0f);
 		}
-		void OnRender(){
+		void OnRender(float InDeltaTime){
 			DrawRect(mWidth*0.25f, mHeight*0.25f, mWidth*0.5f, mHeight*0.5f,mathfu::vec4(1,1,1,1));
 			//glRasterPos2i(100,479);
 			//glRasterPos2i(0,0);

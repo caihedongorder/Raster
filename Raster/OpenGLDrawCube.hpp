@@ -48,12 +48,20 @@ namespace OpenGL
 
 			CamYMaxValue = 450;
 			CamY = 300;
-			CamChangeSpeed = -CamYMaxValue * 0.016f;
+			CamChangeSpeed = -CamYMaxValue;
 
 
 			//glFrontFace(GL_CW);
 		}
-		void OnRender(){
+		void OnRender(float InDeltaTime){
+			RotationAngle += InDeltaTime * 60;
+			CamY += CamChangeSpeed*InDeltaTime;
+			if (Raster::Math::Abs(CamY) > CamYMaxValue)
+			{
+				CamChangeSpeed = -CamChangeSpeed;
+				CamY = Raster::Math::Clamp(CamY, -CamYMaxValue, CamYMaxValue);
+			}
+
 			DrawRect(-mWidth*0.25f, mHeight*0.25f, mWidth*0.5f, mHeight*0.5f,mathfu::vec4(1,1,1,1));
 			//glRasterPos2i(100,479);
 			//glRasterPos2i(0,0);
@@ -64,13 +72,6 @@ namespace OpenGL
 		{
 			//glMatrixMode(GL_TEXTURE);
 			//glLoadIdentity();
-			RotationAngle += 0.016*60;
-			CamY += CamChangeSpeed;
-			if (Raster::Math::Abs(CamY) > CamYMaxValue)
-			{
-				CamChangeSpeed = -CamChangeSpeed;
-				CamY = Raster::Math::Clamp(CamY, -CamYMaxValue, CamYMaxValue);
-			}
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			gluLookAt(0,CamY, 800, 0, 0, 0, 0, 1, 0);

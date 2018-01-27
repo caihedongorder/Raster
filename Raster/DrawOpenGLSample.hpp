@@ -8,7 +8,7 @@ namespace OpenGL
 	public:
 		RenderSample(){}
 		virtual void OnInit(){}
-		virtual void OnRender(){
+		virtual void OnRender(float InDeltaTime){
 		}
 	};
 }

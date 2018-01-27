@@ -18,7 +18,7 @@ namespace OpenGL
 			glMatrixMode(GL_PROJECTION);
 			glOrtho(0, mWidth, mHeight, 0, -1, 1.0f);
 		}
-		void OnRender(){
+		void OnRender(float InDeltaTime){
 
 			if (CamChange)
 			{
