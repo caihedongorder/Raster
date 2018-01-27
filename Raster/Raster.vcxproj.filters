@@ -96,6 +96,9 @@
     <ClInclude Include="OpenGLDrawTexture.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLDrawCube.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

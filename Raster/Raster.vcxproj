@@ -178,6 +178,7 @@
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />
+    <ClInclude Include="OpenGLDrawCube.hpp" />
     <ClInclude Include="OpenGLDrawQuad.hpp" />
     <ClInclude Include="OpenGLDrawTexture.hpp" />
     <ClInclude Include="OpenGLTranslate.hpp" />

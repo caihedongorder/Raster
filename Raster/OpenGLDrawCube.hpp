@@ -5,10 +5,10 @@
 
 namespace OpenGL
 {
-	class DrawTexture : public RenderSample
+	class DrawCube : public RenderSample
 	{
 	public:
-		DrawTexture(int width,int height){
+		DrawCube(int width,int height){
 			mWidth = width;
 			mHeight = height;
 		}

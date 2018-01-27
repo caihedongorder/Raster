@@ -12,14 +12,20 @@ namespace Raster {
 			m_Height = InH;
 			int dataSize = m_Width * m_Height * sizeof(unsigned int);
 			m_Data = std::shared_ptr<unsigned int>(new unsigned int[m_Width*m_Height]);
-			unsigned char* DestPtr = (unsigned char*)m_Data.get();
-			unsigned char* SrcPtr = (unsigned char*)InData;
-
-			int stride = m_Width * sizeof(unsigned int);
-			for (int i = 0; i < m_Height ; ++i)
-			{
-				memcpy(DestPtr + i * stride, SrcPtr + (m_Height - 1 - i) * stride, stride);
-			}
+#if 1
+		unsigned int* DestPtr = (unsigned int*)m_Data.get();
+		unsigned int* SrcPtr = (unsigned int*)InData;
+#define GET_BYTE(inData,inByteIndex) (((inData)>>(8*inByteIndex))&0xff)
+		for (int i = 0; i < m_Height*m_Width ; ++i)
+		{
+			DestPtr[i] = (GET_BYTE(SrcPtr[i],3)<<24) |
+							(GET_BYTE(SrcPtr[i],0)<<16) |
+							(GET_BYTE(SrcPtr[i],1)<<8) |
+							GET_BYTE(SrcPtr[i],2);
+		}
+#else
+		memcpy(m_Data.get(), InData, m_Width*m_Height * sizeof(unsigned int));
+#endif
 		}
 		Image() {
 			m_Width = m_Height = 0;
