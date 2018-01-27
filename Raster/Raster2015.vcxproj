@@ -189,6 +189,7 @@
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="OpenGLDrawCube.hpp" />
     <ClInclude Include="OpenGLDrawQuad.hpp" />
+    <ClInclude Include="OpenGLDrawSolarSystem.hpp" />
     <ClInclude Include="OpenGLDrawTexture.hpp" />
     <ClInclude Include="OpenGLTranslate.hpp" />
     <ClInclude Include="OpenGLViewport.hpp" />
