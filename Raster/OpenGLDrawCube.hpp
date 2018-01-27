@@ -28,11 +28,27 @@ namespace OpenGL
 
 			glClearColor(0, 0, 0, 0);
 
+#if 0
 			glMatrixMode(GL_PROJECTION);
-			glOrtho(0, mWidth, mHeight, 0, -1, 1.0f);
+			glLoadIdentity();
+			glOrtho(0, mWidth, mHeight, 0, 100, -100.0f);
+#else
+
+			glEnable(GL_CULL_FACE);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			gluLookAt(0, 0, 300, 0, 0, 0, 0, 1, 0);
+			
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(60, mWidth*1.0f / mHeight, 1, 1000);
+#endif
+
+			//glFrontFace(GL_CW);
 		}
 		void OnRender(){
-			DrawRect(mWidth*0.25f, mHeight*0.25f, mWidth*0.5f, mHeight*0.5f,mathfu::vec4(1,1,1,1));
+			DrawRect(-mWidth*0.25f, -mHeight*0.25f, mWidth*0.5f, mHeight*0.5f,mathfu::vec4(1,1,1,1));
 			//glRasterPos2i(100,479);
 			//glRasterPos2i(0,0);
 			//glDrawPixels(img.GetWidth(), img.GetHeight(), GL_RGBA, GL_UNSIGNED_BYTE, img.getData());
@@ -43,59 +59,39 @@ namespace OpenGL
 			//glMatrixMode(GL_TEXTURE);
 			//glLoadIdentity();
 
-			Raster::float2 pts[] = {
-				Raster::float2(l,t),
-				Raster::float2(l + w,t),
-				Raster::float2(l + w,t + h),
-				Raster::float2(l,t + h),
+			Raster::float3 pts[] = {
+				Raster::float3(l,t,0),
+				Raster::float3(l + w,t,0),
+				Raster::float3(l + w,t + h,0),
+
+				Raster::float3(l,t,0),
+				Raster::float3(l + w,t + h,0),
+				Raster::float3(l ,t + h,0),
 			};
 			Raster::float2 texCoords[] = {
-				Raster::float2(0,1.0f),
-				Raster::float2(1.0f,1.0f),
-				Raster::float2(1.0f,0.0f),
+				Raster::float2(1.0,0.0f),
 				Raster::float2(0.0f,0.0f),
+				Raster::float2(0.0f,1.0f),
+
+				Raster::float2(1.0f,0.0f),
+				Raster::float2(0.0f,1.0f),
+				Raster::float2(1.0f,1.0f),
 			};
 
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glBindTexture(GL_TEXTURE_2D, texture);
-#if 1
-			glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 1.0f);
-				glVertex2f(l, t);
-				glTexCoord2f(1.0, 1.0f);
-				glVertex2f(l+w, t);
-				glTexCoord2f(1.0, 0.0f);
-				glVertex2f(l+w, t+h);
-				glTexCoord2f(0.0, 0.0f);
-				glVertex2f(l, t+h);
-			glEnd();
-#else
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-			glVertexPointer(2, GL_FLOAT, 0, pts);
+			glVertexPointer(3, GL_FLOAT, 0, pts);
 			glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
-			glDrawArrays(GL_QUADS, 0, sizeof(pts) / sizeof(pts[0]));
-#endif
+			glDrawArrays(GL_TRIANGLES, 0, sizeof(pts) / sizeof(pts[0]));
+
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			glDisable(GL_BLEND);
-
-
-			//glDisableClientState(GL_VERTEX_ARRAY);
-			//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-			//glColor3f(color.x, color.y, color.z);
-		}
-		void DrawRectwithViewport(int l, int t, int w, int h,const mathfu::vec4& color)
-		{
-			glViewport(l, (mHeight - t) - h, w, h);
-			glColor3f(color.x, color.y, color.z);
-			glBegin(GL_QUADS);
-				glVertex2f(0,0);
-				glVertex2f(mWidth,0);
-				glVertex2f(mWidth,mHeight);
-				glVertex2f(0,mHeight);
-			glEnd();
 		}
 	private:
 		int mWidth, mHeight;
