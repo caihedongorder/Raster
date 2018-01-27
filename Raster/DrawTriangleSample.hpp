@@ -15,8 +15,13 @@ namespace Raster
 			triangle1[1] = int2(100, 100);
 			triangle1[2] = int2(50, 0);
 
-			triangle2[0] = int2(100, 100);			triangle2[1] = int2(150, 0);			triangle2[2] = int2(200, 200);
-			triangle3[0] = int2(200, 10);			triangle3[1] = int2(600, 10);			triangle3[2] = int2(400, 0);
+			triangle2[0] = int2(100, 100);
+			triangle2[1] = int2(150, 0);
+			triangle2[2] = int2(200, 200);
+
+			triangle3[0] = int2(200, 10);
+			triangle3[1] = int2(600, 10);
+			triangle3[2] = int2(400, 0);
 		}
 
 		void OnRender(ColorBuffer& InColorBuffer)

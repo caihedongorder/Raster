@@ -81,7 +81,7 @@ namespace Raster {
 			FreeImage_Unload(dib);
 			return img;
 		}
-
+		const void* getData() const { return m_Data.get(); }
 	private:
 		int m_Width;
 		int m_Height;

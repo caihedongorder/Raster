@@ -179,6 +179,7 @@
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="OpenGLDrawQuad.hpp" />
+    <ClInclude Include="OpenGLDrawTexture.hpp" />
     <ClInclude Include="OpenGLTranslate.hpp" />
     <ClInclude Include="OpenGLViewport.hpp" />
     <ClInclude Include="Profile.hpp" />
@@ -189,7 +190,9 @@
     <ClInclude Include="Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

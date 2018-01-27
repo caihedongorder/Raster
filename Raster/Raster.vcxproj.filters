@@ -93,6 +93,9 @@
     <ClInclude Include="OpenGLTranslate.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLDrawTexture.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
