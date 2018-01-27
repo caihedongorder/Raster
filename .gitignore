@@ -1,3 +1,8 @@
 x64
 .vs
 Temp
+Debug
+bin
+ipch
+*.opendb
+*.sdf
