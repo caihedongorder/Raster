@@ -46,6 +46,19 @@ namespace Raster {
 			return m_Width != 0 && m_Height != 0 &&
 				m_Data.get();
 		}
+		static Image BuidImage(int w, int h, RGBA InColor) {
+			Image img;
+			img.m_Width = w;
+			img.m_Height = h;
+			img.m_Data = std::shared_ptr<unsigned int>(new unsigned int[w*h]);
+			unsigned int* DestPtr = (unsigned int*)img.m_Data.get();
+			RGBA convertColor(InColor.B, InColor.G, InColor.R, InColor.A);
+			for (int i = 0; i < w * h ; ++i)
+			{
+				DestPtr[i] = convertColor.Color;
+			}
+			return img;
+		}
 		static Image LoadFromFile(const char* fileName)
 		{
 			Image img;

@@ -188,6 +188,7 @@
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />
     <ClInclude Include="OpenGLDrawCube.hpp" />
+    <ClInclude Include="OpenGLDrawMipmap.hpp" />
     <ClInclude Include="OpenGLDrawQuad.hpp" />
     <ClInclude Include="OpenGLDrawSolarSystem.hpp" />
     <ClInclude Include="OpenGLDrawTexture.hpp" />
