@@ -108,6 +108,12 @@
     <ClInclude Include="OpenGLDrawMipmap.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="OpenGLDrawPointSprite.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLDrawCubeVBO.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
