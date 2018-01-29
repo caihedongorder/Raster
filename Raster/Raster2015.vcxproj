@@ -184,6 +184,8 @@
     <ClInclude Include="DrawTriangleSample.hpp" />
     <ClInclude Include="FPS.hpp" />
     <ClInclude Include="GameTime.hpp" />
+    <ClInclude Include="GLSLDrawQuad.hpp" />
+    <ClInclude Include="GLSLProgram.hpp" />
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />

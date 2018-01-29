@@ -114,6 +114,12 @@
     <ClInclude Include="OpenGLDrawCubeVBO.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GLSLProgram.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLDrawQuad.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
