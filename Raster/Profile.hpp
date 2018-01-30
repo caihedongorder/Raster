@@ -1,4 +1,6 @@
 #pragma once
+#include <tchar.h>
+
 namespace Raster
 {
 	class ProfileTimer
@@ -14,7 +16,7 @@ namespace Raster
 		{
 
 			TCHAR ProfileMsg[MAXBYTE];
-			_stprintf_s(ProfileMsg,MAXBYTE, _T("[%s] :%02f\n"),m_ProfileName,GetEscapeTime() );
+			_stprintf_s(ProfileMsg,MAXBYTE, TEXT("[%s] :%02f\n"),m_ProfileName,GetEscapeTime() );
 
 			OutputDebugString(ProfileMsg);
 		}

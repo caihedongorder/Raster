@@ -51,11 +51,13 @@ namespace OpenGL
 		void OnRender(float InDeltaTime){
 			this->begin();
 #if 0
+			glUseProgram(getProgram());
 			glBindBuffer(GL_VERTEX_ARRAY, mVBO);
 			//glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
 			glEnableVertexAttribArray(mPositionLocation);
 			glVertexAttribPointer(mPositionLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
+			glBindBuffer(GL_VERTEX_ARRAY, mVBO);
 			glDrawArrays(GL_QUADS, 0, 4);
 			glBindBuffer(GL_VERTEX_ARRAY, 0);
 #else
