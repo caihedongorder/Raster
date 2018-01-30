@@ -5,7 +5,7 @@
 
 namespace Raster
 {
-    #define M_PI       3.14159265358979323846f   // pi
+    //#define M_PI       3.14159265358979323846f   // pi
 	class Math
 	{
 	public:

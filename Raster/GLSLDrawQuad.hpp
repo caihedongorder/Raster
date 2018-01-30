@@ -26,10 +26,9 @@ namespace OpenGL
 			};
 			
 			glGenBuffers(1, &mVBO);
-			glBindBuffer(GL_VERTEX_ARRAY, mVBO);
-			int size = sizeof(pts);
-			glBufferData(GL_VERTEX_ARRAY, size, pts, GL_STATIC_DRAW);
-			glBindBuffer(GL_VERTEX_ARRAY, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(pts), pts, GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			
 			const char* vs = "attribute vec4 vPosition;"
 				"void main()"
@@ -50,16 +49,14 @@ namespace OpenGL
 		}
 		void OnRender(float InDeltaTime){
 			this->begin();
-#if 0
-			glUseProgram(getProgram());
-			glBindBuffer(GL_VERTEX_ARRAY, mVBO);
-			//glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
+#if 1
 			glEnableVertexAttribArray(mPositionLocation);
+			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+			//glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
 			glVertexAttribPointer(mPositionLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
-			glBindBuffer(GL_VERTEX_ARRAY, mVBO);
 			glDrawArrays(GL_QUADS, 0, 4);
-			glBindBuffer(GL_VERTEX_ARRAY, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 #else
 			Vertex pts[] = {
 				{Raster::float4(-0.5f,0.5f,0,1.0f)},
