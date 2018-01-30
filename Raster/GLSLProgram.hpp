@@ -14,6 +14,9 @@ namespace OpenGL
 		void end() {
 			glUseProgram(0);
 		}
+		GLuint getProgram() const {
+			return mProgram;
+		}
 	protected:
 		void CreateProgram(const char* vs, const char* ps) {
 			auto vsHandle = glCreateShader(GL_VERTEX_SHADER);
@@ -48,13 +51,21 @@ namespace OpenGL
 
 			glLinkProgram(mProgram);
 
-			glGetShaderiv(mProgram, GL_LINK_STATUS, &status);
+			glDetachShader(mProgram, vsHandle);
+			glDetachShader(mProgram, psHandle);
+
+			glGetProgramiv(mProgram, GL_LINK_STATUS, &status);
 			if (status == GL_FALSE)
 			{
 				char LinkError[MAXBYTE];
-				glGetShaderInfoLog(mProgram, MAXBYTE, 0, LinkError);
+				glGetProgramInfoLog(mProgram, MAXBYTE, 0, LinkError);
 				assert(false && LinkError);
+				glDeleteProgram(mProgram);
+				mProgram = 0;
 			}
+
+			glDeleteShader(vsHandle);
+			glDeleteShader(psHandle);
 		}
 	private:
 		GLuint mProgram;

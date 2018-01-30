@@ -99,6 +99,27 @@
     <ClInclude Include="OpenGLDrawCube.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GameTime.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLDrawQuad.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLProgram.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLDrawCubeVBO.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLDrawMipmap.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLDrawPointSprite.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLDrawSolarSystem.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
