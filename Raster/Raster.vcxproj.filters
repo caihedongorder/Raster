@@ -132,6 +132,9 @@
     <ClInclude Include="Samples\OpenGLViewport.hpp">
       <Filter>头文件\Samples</Filter>
     </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawCubeVBOMapBuffer.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

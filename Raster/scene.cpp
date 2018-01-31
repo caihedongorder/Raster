@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "GameTime.hpp"
 #include "Samples/DrawPointSample.hpp"
 #include "Samples/DrawLineSample.hpp"
 #include "Samples/DrawCircleSample.hpp"
@@ -20,7 +21,7 @@
 #include "Samples/OpenGLDrawPointSprite.hpp"
 #include "Samples/OpenGLDrawCubeVBO.hpp"
 #include "Samples/GLSLDrawQuad.hpp"
-#include "GameTime.hpp"
+#include "Samples/OpenGLDrawCubeVBOMapBuffer.hpp"
 
 
 std::shared_ptr<OpenGL::RenderSample> Sample ;
@@ -52,8 +53,9 @@ void Init()
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawSolarSystem(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawMipmap(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawPointSprite(SCREEN_WIDTH,SCREEN_HEIGHT));
-	Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeVBO(SCREEN_WIDTH,SCREEN_HEIGHT));
+	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeVBO(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::GLSLDrawQuad());
+	Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeVBOMapBuffer(SCREEN_WIDTH,SCREEN_HEIGHT));
 	Sample->OnInit();
 }
 
