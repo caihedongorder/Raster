@@ -135,6 +135,9 @@
     <ClInclude Include="Samples\OpenGLDrawCubeVBOMapBuffer.hpp">
       <Filter>头文件\Samples</Filter>
     </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawCubeIBO.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
     <ClInclude Include="Samples\OpenGLDrawCubeIndices.hpp">
       <Filter>头文件\Samples</Filter>
     </ClInclude>
