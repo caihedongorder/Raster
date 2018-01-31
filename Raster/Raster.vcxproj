@@ -188,6 +188,7 @@
     <ClInclude Include="Samples\GLSLDrawQuad.hpp" />
     <ClInclude Include="Samples\GLSLProgram.hpp" />
     <ClInclude Include="Samples\OpenGLDrawCube.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawCubeIndices.hpp" />
     <ClInclude Include="Samples\OpenGLDrawCubeVBO.hpp" />
     <ClInclude Include="Samples\OpenGLDrawCubeVBOMapBuffer.hpp" />
     <ClInclude Include="Samples\OpenGLDrawMipmap.hpp" />
