@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Samples">
+      <UniqueIdentifier>{4a9aed04-39e7-4496-af0e-12bfa166496c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -33,34 +36,7 @@
     <ClInclude Include="Math.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="DrawSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawPointSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawLineSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Vector.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawCircleSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawCircleSample1.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawBezierCurve.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawTriangleSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawColorLineSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawColorTriangleSample.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FPS.hpp">
@@ -69,55 +45,13 @@
     <ClInclude Include="Profile.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="DrawImageSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Image.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawTextureTriangle.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="LOpenGL.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="DrawOpenGLSample.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawQuad.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLViewport.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLTranslate.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawTexture.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawCube.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="GameTime.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GLSLDrawQuad.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GLSLProgram.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawCubeVBO.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawMipmap.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawPointSprite.hpp">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="OpenGLDrawSolarSystem.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ggl.h">
@@ -128,6 +62,75 @@
     </ClInclude>
     <ClInclude Include="utils.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawBezierCurve.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawCircleSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawCircleSample1.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawColorLineSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawColorTriangleSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawImageSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawLineSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawOpenGLSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawPointSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawTextureTriangle.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\DrawTriangleSample.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\GLSLDrawQuad.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\GLSLProgram.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawCube.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawCubeVBO.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawMipmap.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawPointSprite.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawQuad.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawSolarSystem.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLDrawTexture.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLTranslate.hpp">
+      <Filter>头文件\Samples</Filter>
+    </ClInclude>
+    <ClInclude Include="Samples\OpenGLViewport.hpp">
+      <Filter>头文件\Samples</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

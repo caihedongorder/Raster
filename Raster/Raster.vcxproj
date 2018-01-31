@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../Dependencies/mathfu;$(ProjectDir)/../Dependencies/freeimage;$(ProjectDir)/../Dependencies/freeglut/include;$(ProjectDir)/../Dependencies/glew/include;$(ProjectDir)/../Dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../Dependencies/mathfu;$(ProjectDir)/../Dependencies/freeimage;$(ProjectDir)/../Dependencies/freeglut/include;$(ProjectDir);$(ProjectDir)/../Dependencies/glew/include;$(ProjectDir)/../Dependencies;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)/../Dependencies/freeimage;$(ProjectDir)/../Dependencies/glew/lib/$(Platform);$(ProjectDir)/../Dependencies/freeglut/lib/$(Platform);$(IncludePath);$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)/../Bin/$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)/../Temp/$(Platform)\$(Configuration)\</IntDir>
@@ -85,7 +85,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)/../Dependencies/mathfu;$(ProjectDir)/../Dependencies/freeimage;$(ProjectDir)/../Dependencies/freeglut/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/../Dependencies/mathfu;$(ProjectDir)/../Dependencies/freeimage;$(ProjectDir)/../Dependencies/freeglut/include;$(ProjectDir);$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)/../Dependencies/freeimage;$(ProjectDir)/../Dependencies/freeglut/lib/$(Platform);$(IncludePath);$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)/../Bin/$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)/../Temp/$(Platform)\$(Configuration)\</IntDir>
@@ -114,6 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Precise</FloatingPointModel>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <DisableSpecificWarnings>4244</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,38 +164,38 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ColorBuffer.hpp" />
-    <ClInclude Include="DrawBezierCurve.hpp" />
-    <ClInclude Include="DrawCircleSample.hpp" />
-    <ClInclude Include="DrawCircleSample1.hpp" />
-    <ClInclude Include="DrawColorLineSample.hpp" />
-    <ClInclude Include="DrawColorTriangleSample.hpp" />
-    <ClInclude Include="DrawImageSample.hpp" />
-    <ClInclude Include="DrawLineSample.hpp" />
-    <ClInclude Include="DrawOpenGLSample.hpp" />
-    <ClInclude Include="DrawPointSample.hpp" />
-    <ClInclude Include="DrawSample.hpp" />
-    <ClInclude Include="DrawTextureTriangle.hpp" />
-    <ClInclude Include="DrawTriangleSample.hpp" />
     <ClInclude Include="FPS.hpp" />
     <ClInclude Include="GameTime.hpp" />
     <ClInclude Include="ggl.h" />
-    <ClInclude Include="GLSLDrawQuad.hpp" />
-    <ClInclude Include="GLSLProgram.hpp" />
     <ClInclude Include="Image.hpp" />
     <ClInclude Include="LOpenGL.h" />
     <ClInclude Include="Math.hpp" />
-    <ClInclude Include="OpenGLDrawCube.hpp" />
-    <ClInclude Include="OpenGLDrawCubeVBO.hpp" />
-    <ClInclude Include="OpenGLDrawMipmap.hpp" />
-    <ClInclude Include="OpenGLDrawPointSprite.hpp" />
-    <ClInclude Include="OpenGLDrawQuad.hpp" />
-    <ClInclude Include="OpenGLDrawSolarSystem.hpp" />
-    <ClInclude Include="OpenGLDrawTexture.hpp" />
-    <ClInclude Include="OpenGLTranslate.hpp" />
-    <ClInclude Include="OpenGLViewport.hpp" />
     <ClInclude Include="Profile.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RGBA.hpp" />
+    <ClInclude Include="Samples\DrawBezierCurve.hpp" />
+    <ClInclude Include="Samples\DrawCircleSample.hpp" />
+    <ClInclude Include="Samples\DrawCircleSample1.hpp" />
+    <ClInclude Include="Samples\DrawColorLineSample.hpp" />
+    <ClInclude Include="Samples\DrawColorTriangleSample.hpp" />
+    <ClInclude Include="Samples\DrawImageSample.hpp" />
+    <ClInclude Include="Samples\DrawLineSample.hpp" />
+    <ClInclude Include="Samples\DrawOpenGLSample.hpp" />
+    <ClInclude Include="Samples\DrawPointSample.hpp" />
+    <ClInclude Include="Samples\DrawSample.hpp" />
+    <ClInclude Include="Samples\DrawTextureTriangle.hpp" />
+    <ClInclude Include="Samples\DrawTriangleSample.hpp" />
+    <ClInclude Include="Samples\GLSLDrawQuad.hpp" />
+    <ClInclude Include="Samples\GLSLProgram.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawCube.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawCubeVBO.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawMipmap.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawPointSprite.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawQuad.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawSolarSystem.hpp" />
+    <ClInclude Include="Samples\OpenGLDrawTexture.hpp" />
+    <ClInclude Include="Samples\OpenGLTranslate.hpp" />
+    <ClInclude Include="Samples\OpenGLViewport.hpp" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
