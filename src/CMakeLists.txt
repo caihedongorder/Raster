@@ -2,13 +2,16 @@
 
 include_directories(
     ./
+    ../Dependencies
     ../Dependencies/mathfu
     ../Dependencies/freeimage
     ../Dependencies/freeglut/include
+    ../Dependencies/glew/include
     )
 link_directories(
     ../Dependencies/freeimage
-    ../Dependencies/freeglut/lib
+    ../Dependencies/freeglut/lib/x64
+    ../Dependencies/glew/lib/x64
     )
 
 add_executable(Raster 
