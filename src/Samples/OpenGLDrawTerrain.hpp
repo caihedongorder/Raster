@@ -25,41 +25,27 @@ namespace OpenGL
 		void OnInit() {
 
 			int l = - mWidth * 0.25;
+            l = -1;
 			int t = mHeight * 0.25;
+            t = 0;
 			int w = mWidth * 0.5;
-			int h = mHeight * 0.5;
+            w = 2;
 
-			Vertex vert[] = {
-				// top
+            std::vector<Vertex> vert = {
 				{ glm::vec3( l , t ,w*0.5f )		,glm::vec3( 1 , 0 , 0 )	},
 				{ glm::vec3( l + w , t ,w*0.5f )	,glm::vec3( 0 , 1 , 0 )	},
 				{ glm::vec3( l + w , t ,-w*0.5f )	,glm::vec3( 0 , 0 , 1 )	},
 				{ glm::vec3( l , t ,-w*0.5f )		,glm::vec3( 1 , 1 , 0 )	},
-
-				//bottom
-				{ glm::vec3( l , t-h ,w*0.5f )		,glm::vec3( 1 , 0 , 1 )	},
-				{ glm::vec3( l , t-h ,-w*0.5f )		,glm::vec3( 0 , 1 , 1 )	},
-				{ glm::vec3( l + w , t-h ,-w*0.5f )	,glm::vec3( 0 , 0 , 0 )	},
-				{ glm::vec3( l + w , t-h ,w*0.5f )	,glm::vec3( 1 , 1 , 1 )	},
 			};
 			glGenBuffers(1, &mVBO);
 			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*vert.size(), &vert[0], GL_STATIC_DRAW);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 			GLuint indices_quad[] = {
 				// top bottom
 				0,1,2,3, 
-				4,5,6,7,
-
-				//front back
-				4,7,1,0,
-				5,3,2,6,
-
-				//left right
-				7,6,2,1,
-				4,0,3,5,
 			};
 			mIndexCountQuads = sizeof(indices_quad) / sizeof(indices_quad[0]);
 			glGenBuffers(1, &mIBOQuad);
@@ -88,13 +74,14 @@ namespace OpenGL
 			RotationAngle = 0.0f;
 
 			CamYMaxValue = 450;
-			CamY = 300;
+			CamY = 10;
 			CamChangeSpeed = -CamYMaxValue;
 
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			gluLookAt(0,CamY, 800, 0, 0, 0, 0, 1, 0);
+			gluLookAt(0,CamY, 10, 0, 0, 0, 0, 1, 0);
+            //glTranslatef(0,-300,0);
             //
 			//glFrontFace(GL_CW);
 		}
@@ -106,12 +93,12 @@ namespace OpenGL
 
 
 			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_COLOR_ARRAY);
+			//glEnableClientState(GL_COLOR_ARRAY);
 			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBOQuad);
 			glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)0);
-			glColorPointer(3, GL_FLOAT, sizeof(Vertex), (void*)12);
+			//glColorPointer(3, GL_FLOAT, sizeof(Vertex), (void*)12);
 
 			glDrawElements(GL_QUADS, mIndexCountQuads, GL_UNSIGNED_INT, nullptr);
 
@@ -119,7 +106,7 @@ namespace OpenGL
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			glDisableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_COLOR_ARRAY);
+			//glDisableClientState(GL_COLOR_ARRAY);
 			glDisable(GL_BLEND);
 		}
 	private:
