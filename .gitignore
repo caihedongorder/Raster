@@ -5,3 +5,5 @@ bin
 ipch
 *.opendb
 *.sdf
+CMakeCache.txt
+CMakefiles

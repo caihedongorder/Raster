@@ -1,20 +1,20 @@
 [
 {
-  "directory": "C:/Users/myzn/source/Raster/Bin",
+  "directory": "C:/Users/myzn/source/Raster/bin",
   "command": "F:\\PROGRA~1\\VS-COM~1\\VC\\Tools\\MSVC\\1412~1.258\\bin\\Hostx86\\x86\\cl.exe @<<
  /nologo /TP  -IC:\\Users\\myzn\\source\\Raster\\src\\. -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\mathfu -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\freeimage -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\freeglut\\include -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\glew\\include  /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1   /FoCMakeFiles\\Raster.dir\\main.cpp.obj /FdCMakeFiles\\Raster.dir\\ /FS -c C:\\Users\\myzn\\source\\Raster\\src\\main.cpp
 <<",
   "file": "C:/Users/myzn/source/Raster/src/main.cpp"
 },
 {
-  "directory": "C:/Users/myzn/source/Raster/Bin",
+  "directory": "C:/Users/myzn/source/Raster/bin",
   "command": "F:\\PROGRA~1\\VS-COM~1\\VC\\Tools\\MSVC\\1412~1.258\\bin\\Hostx86\\x86\\cl.exe @<<
  /nologo /TP  -IC:\\Users\\myzn\\source\\Raster\\src\\. -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\mathfu -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\freeimage -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\freeglut\\include -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\glew\\include  /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1   /FoCMakeFiles\\Raster.dir\\scene.cpp.obj /FdCMakeFiles\\Raster.dir\\ /FS -c C:\\Users\\myzn\\source\\Raster\\src\\scene.cpp
 <<",
   "file": "C:/Users/myzn/source/Raster/src/scene.cpp"
 },
 {
-  "directory": "C:/Users/myzn/source/Raster/Bin",
+  "directory": "C:/Users/myzn/source/Raster/bin",
   "command": "F:\\PROGRA~1\\VS-COM~1\\VC\\Tools\\MSVC\\1412~1.258\\bin\\Hostx86\\x86\\cl.exe @<<
  /nologo /TP  -IC:\\Users\\myzn\\source\\Raster\\src\\. -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\mathfu -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\freeimage -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\freeglut\\include -IC:\\Users\\myzn\\source\\Raster\\src\\..\\Dependencies\\glew\\include  /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1   /FoCMakeFiles\\Raster.dir\\utils.cpp.obj /FdCMakeFiles\\Raster.dir\\ /FS -c C:\\Users\\myzn\\source\\Raster\\src\\utils.cpp
 <<",
