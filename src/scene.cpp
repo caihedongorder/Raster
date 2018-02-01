@@ -24,6 +24,7 @@
 #include "Samples/OpenGLDrawCubeVBOMapBuffer.hpp"
 #include "Samples/OpenGLDrawCubeIndices.hpp"
 #include "Samples/OpenGLDrawCubeIBO.hpp"
+#include "Samples/OpenGLDrawTerrain.hpp"
 
 
 std::shared_ptr<OpenGL::RenderSample> Sample ;
@@ -59,20 +60,20 @@ void Init()
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::GLSLDrawQuad());
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeVBOMapBuffer(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndices(SCREEN_WIDTH,SCREEN_HEIGHT));
-	Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndicesIBO(SCREEN_WIDTH,SCREEN_HEIGHT));
+	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndicesIBO(SCREEN_WIDTH,SCREEN_HEIGHT));
+	Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrain(SCREEN_WIDTH,SCREEN_HEIGHT));
+    
 	Sample->OnInit();
 }
 
 void SetViewportSize(float width, float height)
 {
-
 }
 
 Raster::GameTime GGameTime;
 void Draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
 	GGameTime.Update();
 	float deltaTime = GGameTime.GetDeltaTime();
