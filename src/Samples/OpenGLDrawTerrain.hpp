@@ -31,26 +31,63 @@ namespace OpenGL
 			int w = mWidth * 0.5;
             w = 2;
 
-            std::vector<Vertex> vert = {
-				{ glm::vec3( l , t ,w*0.5f )		,glm::vec3( 1 , 0 , 0 )	},
-				{ glm::vec3( l + w , t ,w*0.5f )	,glm::vec3( 0 , 1 , 0 )	},
-				{ glm::vec3( l + w , t ,-w*0.5f )	,glm::vec3( 0 , 0 , 1 )	},
-				{ glm::vec3( l , t ,-w*0.5f )		,glm::vec3( 1 , 1 , 0 )	},
-			};
+            std::vector<Vertex> verts; 
+
+            int VertexCountX = 200;
+            int VertexCountZ = 200;
+            float Step = 0.5;
+            float startX = -Step * VertexCountX * 0.5f;
+            float startZ = -Step * VertexCountZ * 0.5f;
+            float currentX = startX;
+            float currentZ = startZ;
+
+            for(int z = 0;z < VertexCountZ ; ++z)
+            {
+                currentX = startX;
+                for(int x = 0 ; x < VertexCountX ; ++x)
+                {
+                    Vertex vert;
+                    vert.position.x = currentX;
+                    vert.position.z = currentZ;
+                    vert.position.y = 0;
+
+                    vert.color.x = vert.color.y = vert.color.z = 1.0f;
+
+                    verts.push_back(vert);
+
+                    currentX +=Step;
+                }
+                currentZ += Step;
+            }
+
 			glGenBuffers(1, &mVBO);
 			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*vert.size(), &vert[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*verts.size(), &verts[0], GL_STATIC_DRAW);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-			GLuint indices_quad[] = {
-				// top bottom
-				0,1,2,3, 
-			};
-			mIndexCountQuads = sizeof(indices_quad) / sizeof(indices_quad[0]);
+            std::vector<GLuint> indices_quads;
+            int currentQuadX = 0;
+            int currentQuadZ = 0;
+            for(int z = 0 ; z < VertexCountZ - 1 ; ++z)
+            {
+                currentQuadX = 0;
+                for(int x = 0 ; x < VertexCountX - 1 ; ++ x)
+                {
+                    indices_quads.push_back(currentQuadZ        * VertexCountX + currentQuadX   );
+                    indices_quads.push_back((currentQuadZ + 1 ) * VertexCountX + currentQuadX   );
+                    indices_quads.push_back((currentQuadZ + 1 ) * VertexCountX + currentQuadX + 1);
+                    indices_quads.push_back(currentQuadZ        * VertexCountX + currentQuadX + 1);
+
+                    currentQuadX += 1;
+                }
+                currentQuadZ += 1;
+            }
+
+			mIndexCountQuads = indices_quads.size();
 			glGenBuffers(1, &mIBOQuad);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBOQuad);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices_quad), indices_quad, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices_quads.size(), &indices_quads[0], GL_STATIC_DRAW);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 			glClearColor(0, 0, 0, 0);
 
