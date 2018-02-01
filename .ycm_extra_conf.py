@@ -150,10 +150,11 @@ def GetCompilationInfoForFile( filename ):
   return database.GetCompilationInfoForFile( filename )
 
 ProjectIncludeFiles=[
-	"-I./Dependencies",
-	"-I./Dependencies/freeglut/include",
-	"-I./Dependencies/freeimage/include",
-	"-I./Dependencies/glew/include",
+	"Dependencies",
+	"Dependencies/freeglut/include",
+	"Dependencies/freeimage/include",
+	"Dependencies/glew/include",
+	"src",
 ]
 
 def FlagsForFile( filename, **kwargs ):
@@ -172,6 +173,9 @@ def FlagsForFile( filename, **kwargs ):
     # does NOT need to remove the stdlib flag. DO NOT USE THIS IN YOUR
     # ycm_extra_conf IF YOU'RE NOT 100% SURE YOU NEED IT.
     #final_flags.append("-ID::/Vehicle/Source/Vehicle")
+    for i in range(0,len(ProjectIncludeFiles)):
+        ProjectIncludeFiles[i] = '-I'+os.path.join(os.path.abspath(os.curdir),ProjectIncludeFiles[i])
+
     final_flags.extend(ProjectIncludeFiles)
     try:
       final_flags.remove( '-stdlib=libc++' )
