@@ -44,7 +44,7 @@ namespace OpenGL
             std::vector<unsigned char> heightData;
             heightData.resize(VertexCountX*VertexCountZ);
             memset(&heightData[0],0,VertexCountX*VertexCountZ);
-            TerrainUtil::evaluateHeightMidReplace(0,0,VertexCountX-1,VertexCountZ-1,VertexCountX,128.0f,0.5f,&heightData[0]);
+            TerrainUtil::evaluateHeightMidReplace(0,0,VertexCountX-1,VertexCountZ-1,VertexCountX,128.0f,0.48f,&heightData[0]);
             //TerrainUtil::evaluateHeightMidReplace(int left,int top,int right,int bottom,int stride,float delta,float rough,unsigned char* HeightData)
 
             for(int z = 0;z < VertexCountZ ; ++z)
