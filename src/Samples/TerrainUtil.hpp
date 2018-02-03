@@ -12,10 +12,10 @@ namespace OpenGL
             float BH = heightData[top*stride+right];
             float CH = heightData[bottom*stride+left];
             float DH = heightData[bottom*stride+right];
-            if(AH == 0) heightData[top*stride+left]=AH=Raster::Math::RandInRange(128,255);
-            if(BH == 0) heightData[top*stride+right]=BH=Raster::Math::RandInRange(128,255);
-            if(CH == 0) heightData[bottom*stride+left]=CH=Raster::Math::RandInRange(128,255);
-            if(DH == 0) heightData[bottom*stride+right]=DH=Raster::Math::RandInRange(128,255);
+            if(AH == 0) heightData[top*stride+left]=AH=Raster::Math::RandInRange(0,255);
+            if(BH == 0) heightData[top*stride+right]=BH=Raster::Math::RandInRange(0,255);
+            if(CH == 0) heightData[bottom*stride+left]=CH=Raster::Math::RandInRange(0,255);
+            if(DH == 0) heightData[bottom*stride+right]=DH=Raster::Math::RandInRange(0,255);
 
 
             int XMid = Raster::Math::Lerp(left,right,0.5f);
