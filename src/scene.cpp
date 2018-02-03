@@ -25,6 +25,7 @@
 #include "Samples/OpenGLDrawCubeIndices.hpp"
 #include "Samples/OpenGLDrawCubeIBO.hpp"
 #include "Samples/OpenGLDrawTerrain.hpp"
+#include "Samples/OpenGLDrawTerrainHeightMidReplace.hpp"
 
 
 std::shared_ptr<OpenGL::RenderSample> Sample ;
@@ -61,7 +62,8 @@ void Init()
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeVBOMapBuffer(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndices(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndicesIBO(SCREEN_WIDTH,SCREEN_HEIGHT));
-	Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrain(SCREEN_WIDTH,SCREEN_HEIGHT));
+	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrain(SCREEN_WIDTH,SCREEN_HEIGHT));
+	Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrainHeightMidReplace(SCREEN_WIDTH,SCREEN_HEIGHT));
     
 	Sample->OnInit();
 }
