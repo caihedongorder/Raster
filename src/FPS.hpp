@@ -7,18 +7,31 @@ namespace Raster
 	public:
 		FPS() {
 			QueryPerformanceFrequency((LARGE_INTEGER*)&m_Frequency);
+            QueryPerformanceCounter((LARGE_INTEGER*)&m_BeginTime);
+            mFPS = 0 ;
 		}
 		void Update() {
 
-			if (GetEscapeTime() > 1.0f) { QueryPerformanceCounter((LARGE_INTEGER*)&m_BeginTime); m_RenderCount = 0; }
+            double TimeEscape = GetEscapeTime();
 
-			++m_RenderCount;
+			if ( TimeEscape > 1.0f) { 
+                QueryPerformanceCounter((LARGE_INTEGER*)&m_BeginTime);
+                mFPS = m_RenderCount / TimeEscape ;
+                m_RenderCount = 0;
+                
+            }
+            else
+            {
+                ++m_RenderCount;
+            }
+
 		}
 		inline float GetFPS()const {
-			return (float)m_RenderCount / GetEscapeTime();
+			return mFPS;
+            /* return GetEscapeTime(); */
 		}
 		inline float GetTimeConsumeOneFrame()const {
-			return (float)GetEscapeTime()*1000.0f / m_RenderCount;
+			return mFPS * 1000.0f / m_RenderCount;
 		}
 	protected:
 		inline double GetEscapeTime() const {
@@ -30,6 +43,7 @@ namespace Raster
 	private:
 		__int64 m_Frequency;
 		__int64 m_BeginTime;
+        float mFPS;
 		int m_RenderCount;
 	};
 }

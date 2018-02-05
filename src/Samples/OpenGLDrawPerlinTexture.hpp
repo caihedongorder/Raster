@@ -4,6 +4,7 @@
 #include "image.hpp"
 #include "Vector.hpp"
 #include "TerrainUtil.hpp"
+#include "PerlinNoise.hpp"
 
 namespace OpenGL
 {
@@ -22,18 +23,24 @@ namespace OpenGL
 
             std::vector<unsigned char> heightData;
             heightData.resize( mWidth * mHeight );
-            TerrainUtil::evaluateHeightMidReplace(0,0,mWidth-1,mHeight-1,mWidth,128,0.5f,&heightData[0]);
+            /* TerrainUtil::evaluateHeightMidReplace(0,0,mWidth-1,mHeight-1,mWidth,128,0.5f,&heightData[0]); */
 
             std::vector<unsigned char> imgData;
             imgData.resize(mWidth * mHeight * 4);
             int nStride = mWidth * 4 ;
+
+            PerlinNoise noise;
+            float Xscale = mWidth / PerlinNoise::tableSize;
+            float Yscale = mHeight / PerlinNoise::tableSize;
             for(int y = 0 ; y < mHeight ; ++y )
                 for(int x = 0 ; x < mWidth ; ++x )
                 {
-                    imgData[y*nStride + x*4     ] = heightData[ y * mWidth + x ];
-                    imgData[y*nStride + x*4 + 1 ] = heightData[ y * mWidth + x ];
-                    imgData[y*nStride + x*4 + 2 ] = heightData[ y * mWidth + x ];
-                    imgData[y*nStride + x*4 + 3 ] = heightData[ y * mWidth + x ];
+                    float value = glm::clamp(noise.noise(x,y,2.2f)+noise.noise(x,y,4.2f),0.0f,1.0f);
+                    unsigned char height = value * 255;
+                    imgData[y*nStride + x*4     ] = height;
+                    imgData[y*nStride + x*4 + 1 ] = height;
+                    imgData[y*nStride + x*4 + 2 ] = height;
+                    imgData[y*nStride + x*4 + 3 ] = height;
                 }
 
 

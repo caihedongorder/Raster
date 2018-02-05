@@ -1,13 +1,13 @@
 #pragma once
-#pragma once
 #include "DrawOpenGLSample.hpp"
 #include "image.hpp"
 #include "Vector.hpp"
+#include "TerrainUtil.hpp"
 
 
 namespace OpenGL
 {
-	class DrawTerrain : public RenderSample
+	class DrawTerrain: public RenderSample
 	{
 		struct Vertex
 		{
@@ -16,7 +16,7 @@ namespace OpenGL
 		};
 	private:
 		GLuint mVBO;
-		GLuint mIBOQuad;
+		GLuint mIBO;
 	public:
 		DrawTerrain(int width,int height){
 			mWidth = width;
@@ -33,13 +33,19 @@ namespace OpenGL
 
             std::vector<Vertex> verts; 
 
-            int VertexCountX = 200;
-            int VertexCountZ = 200;
-            float Step = 0.5;
+            int VertexCountX = 257;
+            int VertexCountZ = 257;
+            float Step = 10;
             float startX = -Step * VertexCountX * 0.5f;
             float startZ = -Step * VertexCountZ * 0.5f;
             float currentX = startX;
             float currentZ = startZ;
+
+            std::vector<unsigned char> heightData;
+            heightData.resize(VertexCountX*VertexCountZ);
+            memset(&heightData[0],0,VertexCountX*VertexCountZ);
+            TerrainUtil::evaluateHeightMidReplace(0,0,VertexCountX-1,VertexCountZ-1,VertexCountX,128.0f,0.48f,&heightData[0]);
+            //TerrainUtil::evaluateHeightMidReplace(int left,int top,int right,int bottom,int stride,float delta,float rough,unsigned char* HeightData)
 
             for(int z = 0;z < VertexCountZ ; ++z)
             {
@@ -49,7 +55,9 @@ namespace OpenGL
                     Vertex vert;
                     vert.position.x = currentX;
                     vert.position.z = currentZ;
-                    vert.position.y = 0;
+                    /* vert.position.y = heightData[z*VertexCountX+x]*0.1f; */
+                    vert.position.y = heightData[z*VertexCountX+x];
+                    /* vert.position.y = 0; */
 
                     vert.color.x = vert.color.y = vert.color.z = 1.0f;
 
@@ -74,19 +82,22 @@ namespace OpenGL
                 currentQuadX = 0;
                 for(int x = 0 ; x < VertexCountX - 1 ; ++ x)
                 {
-                    indices_quads.push_back(currentQuadZ        * VertexCountX + currentQuadX   );
-                    indices_quads.push_back((currentQuadZ + 1 ) * VertexCountX + currentQuadX   );
-                    indices_quads.push_back((currentQuadZ + 1 ) * VertexCountX + currentQuadX + 1);
-                    indices_quads.push_back(currentQuadZ        * VertexCountX + currentQuadX + 1);
+                    indices_quads.push_back( ( currentQuadZ +  1 )   * VertexCountX + currentQuadX       );
+                    indices_quads.push_back(currentQuadZ            * VertexCountX + currentQuadX + 1   );
+                    indices_quads.push_back(currentQuadZ            * VertexCountX + currentQuadX       );
+
+                    indices_quads.push_back(( currentQuadZ  +  1 )  * VertexCountX + currentQuadX       );
+                    indices_quads.push_back(( currentQuadZ  +  1 )  * VertexCountX + currentQuadX + 1   );
+                    indices_quads.push_back(currentQuadZ            * VertexCountX + currentQuadX + 1   );
 
                     currentQuadX += 1;
                 }
                 currentQuadZ += 1;
             }
 
-			mIndexCountQuads = indices_quads.size();
-			glGenBuffers(1, &mIBOQuad);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBOQuad);
+			mIndexCount= indices_quads.size();
+			glGenBuffers(1, &mIBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices_quads.size(), &indices_quads[0], GL_STATIC_DRAW);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 			glClearColor(0, 0, 0, 0);
@@ -102,7 +113,7 @@ namespace OpenGL
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			gluLookAt(100, 0, 1000, 0, 0, 0, 0, 1, 0);
+			gluLookAt(100, 0, 4000, 0, 0, 0, 0, 1, 0);
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
@@ -111,33 +122,33 @@ namespace OpenGL
 			RotationAngle = 0.0f;
 
 			CamYMaxValue = 450;
-			CamY = 10;
+			CamY = 500;
 			CamChangeSpeed = -CamYMaxValue;
 
 
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			gluLookAt(0,CamY, 10, 0, 0, 0, 0, 1, 0);
             //glTranslatef(0,-300,0);
             //
 			//glFrontFace(GL_CW);
 		}
 		void OnRender(float InDeltaTime){
-			//RotationAngle += InDeltaTime * 60;
+			RotationAngle += InDeltaTime * 60;
 
-			//glRotatef(RotationAngle, 0, 1, 0);
 
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			gluLookAt(0,CamY, 600, 0, 0, 0, 0, 1, 0);
+			glRotatef(RotationAngle, 0, 1, 0);
 
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			//glEnableClientState(GL_COLOR_ARRAY);
 			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBOQuad);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
 			glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)0);
 			//glColorPointer(3, GL_FLOAT, sizeof(Vertex), (void*)12);
 
-			glDrawElements(GL_QUADS, mIndexCountQuads, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -148,7 +159,7 @@ namespace OpenGL
 		}
 	private:
 		int mWidth, mHeight;
-		int mIndexCountQuads;
+		int mIndexCount;
 		Raster::Image img;
 		float RotationAngle;
 		float CamY;
