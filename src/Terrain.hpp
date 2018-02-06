@@ -96,9 +96,10 @@ namespace OpenGL
                 }
                 currentZ += StepY;
             }
-
-			glGenBuffers(1, &mVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+            
+            GLuint PositionVBO;
+			glGenBuffers(1, &PositionVBO);
+			glBindBuffer(GL_ARRAY_BUFFER, PositionVBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*verts.size(), &verts[0], GL_STATIC_DRAW);
             glEnableVertexAttribArray(mPositionLocation);
             glVertexAttribPointer(mPositionLocation,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
@@ -127,8 +128,10 @@ namespace OpenGL
             }
 
 			mIndexCount= indices.size();
-			glGenBuffers(1, &mIBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+
+            GLuint IBO;
+			glGenBuffers(1, &IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices.size(), &indices[0], GL_STATIC_DRAW);
 			glClearColor(0, 0, 0, 0);
 
@@ -156,10 +159,6 @@ namespace OpenGL
 		void OnRender(float InDeltaTime){
 			RotationAngle += InDeltaTime * 60;
 
-			/* glBindBuffer(GL_ARRAY_BUFFER, mVBO); */
-			/* glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO); */
-
-            glBindVertexArray(mABO);
             glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
             mProgram.begin();
                 OnRenderImpl();
@@ -179,12 +178,11 @@ namespace OpenGL
             OnRenderImpl(0.1f);
             glPointSize(1.0f);
 
-            glBindVertexArray(0);
 
 		}
     private:
         void OnRenderImpl(float heightOffset = 0.0f){
-
+            glBindVertexArray(mABO);
             for(int SectionY = 0 ; SectionY < SectionCount.y ; ++SectionY )
             {
                 for(int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX )
@@ -199,13 +197,10 @@ namespace OpenGL
                     glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
                 }
             }
-
-
+            glBindVertexArray(0);
         }
     private:
         GLuint mABO;
-		GLuint mVBO;
-		GLuint mIBO;
 		int mIndexCount;
 		Raster::Image img;
 		float RotationAngle;
