@@ -27,6 +27,8 @@ namespace OpenGL
         }
         void Init(glm::ivec3 WorldSize , glm::vec3 WorldScale)
         {
+            mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
+            mPositionLocation = glGetAttribLocation(mProgram.getProgram(),"vPosition");
 
             std::vector<Vertex> verts; 
 
@@ -146,10 +148,21 @@ namespace OpenGL
 
 		void OnRender(float InDeltaTime){
 			RotationAngle += InDeltaTime * 60;
-            glColor3f(1,1,1);
-            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-            OnRenderImpl();
 
+			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+            mProgram.begin();
+                glEnableVertexAttribArray(mPositionLocation);
+                glVertexAttribPointer(mPositionLocation,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
+                OnRenderImpl();
+            mProgram.end();
+            glDisableVertexAttribArray(mPositionLocation);
+            
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)0);
             //绘制线
             glColor3f(0,0,1);
             glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
@@ -161,14 +174,15 @@ namespace OpenGL
             glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
             OnRenderImpl(0.1f);
             glPointSize(1.0f);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisable(GL_BLEND);
 		}
     private:
         void OnRenderImpl(float heightOffset = 0.0f){
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
-			glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)0);
 
             for(int SectionY = 0 ; SectionY < SectionCount.y ; ++SectionY )
             {
@@ -185,11 +199,6 @@ namespace OpenGL
                 }
             }
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-			glDisableClientState(GL_VERTEX_ARRAY);
-			glDisable(GL_BLEND);
 
         }
     private:
@@ -204,5 +213,8 @@ namespace OpenGL
         std::vector<TerrainSection> TerrainSections;
         glm::ivec2 SectionCount;
         glm::vec2 SectionSize;
+
+        GLSLProgram mProgram;
+        GLint mPositionLocation;
     };
 }

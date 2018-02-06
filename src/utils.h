@@ -1,3 +1,7 @@
 #pragma once
+#include "LOpenGL.h"
+#include <string>
+#include <string.h>
+#include <stdio.h>
 
-unsigned char* LoadFileContent(const char* fileName, int & fileSize);
+std::string LoadFileContent(const char* fileName, int & fileSize);

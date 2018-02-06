@@ -1,15 +1,17 @@
 #pragma once
 #include "DrawOpenGLSample.hpp"
 #include "GLSLProgram.hpp"
+#include "utils.h"
 
 namespace OpenGL
 {
-	class GLSLDrawQuad : public RenderSample,GLSLProgram
+	class GLSLDrawQuad : public RenderSample
 	{
 
 	private:
 		GLuint mVBO;
 		GLint mPositionLocation;
+        GLSLProgram mProgram;
 	private:
 		struct Vertex
 		{
@@ -19,10 +21,10 @@ namespace OpenGL
 		GLSLDrawQuad(){}
 		virtual void OnInitShader(){
 			Vertex pts[] = {
-				{Raster::float4(-0.5f,0.5f,0,1.0f)},
-				{Raster::float4(0.5f,0.5f,0,1.0f)},
-				{Raster::float4(0.5f,-0.5f,0,1.0f)},
-				{Raster::float4(-0.5f,-0.5f,0,1.0f)},
+				{Raster::float4(-0.5f,0.5f,-5.0f,1.0f)},
+				{Raster::float4(0.5f,0.5f,-5.0f,1.0f)},
+				{Raster::float4(0.5f,-0.5f,-5.0f,1.0f)},
+				{Raster::float4(-0.5f,-0.5f,-5.0f,1.0f)},
 			};
 			
 			glGenBuffers(1, &mVBO);
@@ -30,33 +32,27 @@ namespace OpenGL
 			glBufferData(GL_ARRAY_BUFFER, sizeof(pts), pts, GL_STATIC_DRAW);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			
-			const char* vs = "attribute vec4 vPosition;"
-				"void main()"
-				"{"
-					"gl_Position = vPosition;"
-				"}";
-			const char* ps = "void main()"
-				"{"
-					"gl_FragColor = vec4(1,0,0,1);"
-				"}";
-			CreateProgram(vs, ps);
+			mProgram.CreateProgram("shaders/test.vs","shaders/test.ps");
 
-			mPositionLocation = glGetAttribLocation(getProgram(), "vPosition");
+			mPositionLocation = glGetAttribLocation(mProgram.getProgram(), "vPosition");
+
+			gluPerspective(60, float(800)/ float(600), 1, 1200);
 								
 		}
 		void OnInit() {
 			this->OnInitShader();
 		}
 		void OnRender(float InDeltaTime){
-			this->begin();
+            glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+			mProgram.begin();
                 glEnableVertexAttribArray(mPositionLocation);
-                glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-                //glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
                 glVertexAttribPointer(mPositionLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+                //glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
 
                 glDrawArrays(GL_QUADS, 0, 4);
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
-			this->end();
+			mProgram.end();
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 	};
 }

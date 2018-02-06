@@ -1,5 +1,6 @@
 #pragma once
 #include "LOpenGL.h"
+#include "utils.h"
 
 namespace OpenGL
 {
@@ -17,8 +18,13 @@ namespace OpenGL
 		GLuint getProgram() const {
 			return mProgram;
 		}
-	protected:
-		void CreateProgram(const char* vs, const char* ps) {
+		void CreateProgram(const char* vsFilePath, const char* psFilePath) {
+            int fileSize = 0;
+            std::string VSContent = LoadFileContent(vsFilePath,fileSize);
+            std::string PSContent = LoadFileContent(psFilePath,fileSize);
+            const char* vs = VSContent.c_str();
+            const char* ps = PSContent.c_str();
+
 			auto vsHandle = glCreateShader(GL_VERTEX_SHADER);
 			auto psHandle = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -66,6 +72,7 @@ namespace OpenGL
 
 			glDeleteShader(vsHandle);
 			glDeleteShader(psHandle);
+
 		}
 	private:
 		GLuint mProgram;
