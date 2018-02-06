@@ -69,6 +69,11 @@ namespace OpenGL
             memset(&heightData[0],0,VertexCountX*VertexCountZ);
             TerrainUtil::evaluateHeightMidReplace(0,0,VertexCountX-1,VertexCountZ-1,VertexCountX,128.0f,0.48f,&heightData[0]);
             //TerrainUtil::evaluateHeightMidReplace(int left,int top,int right,int bottom,int stride,float delta,float rough,unsigned char* HeightData)
+            //
+            
+            //创建abo
+            glGenVertexArrays(1,&mABO);
+            glBindVertexArray(mABO);
 
             //创建vbo
             for(int z = 0;z < VertexCountZ ; ++z)
@@ -95,7 +100,8 @@ namespace OpenGL
 			glGenBuffers(1, &mVBO);
 			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*verts.size(), &verts[0], GL_STATIC_DRAW);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glEnableVertexAttribArray(mPositionLocation);
+            glVertexAttribPointer(mPositionLocation,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
 
 
             // 创建索引
@@ -124,10 +130,11 @@ namespace OpenGL
 			glGenBuffers(1, &mIBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices.size(), &indices[0], GL_STATIC_DRAW);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 			glClearColor(0, 0, 0, 0);
 
-
+            glBindVertexArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 			glEnable(GL_CULL_FACE);
 			
 			glMatrixMode(GL_MODELVIEW);
@@ -149,37 +156,31 @@ namespace OpenGL
 		void OnRender(float InDeltaTime){
 			RotationAngle += InDeltaTime * 60;
 
-			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO);
+			/* glBindBuffer(GL_ARRAY_BUFFER, mVBO); */
+			/* glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO); */
 
+            glBindVertexArray(mABO);
             glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
             mProgram.begin();
-                glEnableVertexAttribArray(mPositionLocation);
-                glVertexAttribPointer(mPositionLocation,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
                 OnRenderImpl();
             mProgram.end();
-            glDisableVertexAttribArray(mPositionLocation);
-            
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(3, GL_FLOAT, sizeof(Vertex), (void*)0);
+           
             //绘制线
-            glColor3f(0,0,1);
             glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+            glColor3f(0,0,1);
             OnRenderImpl(0.1f);
 
+
+
             //绘制点
-            glColor3f(0,1,1);
             glPointSize(8.0f);
+            glColor3f(0,1,1);
             glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
             OnRenderImpl(0.1f);
             glPointSize(1.0f);
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            glBindVertexArray(0);
 
-			glDisableClientState(GL_VERTEX_ARRAY);
-			glDisable(GL_BLEND);
 		}
     private:
         void OnRenderImpl(float heightOffset = 0.0f){
@@ -202,6 +203,7 @@ namespace OpenGL
 
         }
     private:
+        GLuint mABO;
 		GLuint mVBO;
 		GLuint mIBO;
 		int mIndexCount;

@@ -9,12 +9,13 @@ namespace Raster
 			QueryPerformanceFrequency((LARGE_INTEGER*)&m_Frequency);
             QueryPerformanceCounter((LARGE_INTEGER*)&m_BeginTime);
             mFPS = 0 ;
+            m_RenderCount = 0;
 		}
 		void Update() {
 
             double TimeEscape = GetEscapeTime();
 
-			if ( TimeEscape > 1.0f) { 
+			if ( TimeEscape > 1.0) { 
                 QueryPerformanceCounter((LARGE_INTEGER*)&m_BeginTime);
                 mFPS = m_RenderCount / TimeEscape ;
                 m_RenderCount = 0;
@@ -28,7 +29,6 @@ namespace Raster
 		}
 		inline float GetFPS()const {
 			return mFPS;
-            /* return GetEscapeTime(); */
 		}
 		inline float GetTimeConsumeOneFrame()const {
 			return mFPS * 1000.0f / m_RenderCount;
