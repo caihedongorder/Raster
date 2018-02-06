@@ -49,25 +49,13 @@ namespace OpenGL
 		}
 		void OnRender(float InDeltaTime){
 			this->begin();
-#if 1
-			glEnableVertexAttribArray(mPositionLocation);
-			glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-			//glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
-			glVertexAttribPointer(mPositionLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+                glEnableVertexAttribArray(mPositionLocation);
+                glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+                //glVertexPointer(3, GL_FLOAT, sizeof(Vertex), 0);
+                glVertexAttribPointer(mPositionLocation, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 
-			glDrawArrays(GL_QUADS, 0, 4);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-#else
-			Vertex pts[] = {
-				{Raster::float4(-0.5f,0.5f,0,1.0f)},
-				{Raster::float4(0.5f,0.5f,0,1.0f)},
-				{Raster::float4(0.5f,-0.5f,0,1.0f)},
-				{Raster::float4(-0.5f,-0.5f,0,1.0f)},
-			};
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(4, GL_FLOAT, sizeof(Vertex), pts);
-			glDrawArrays(GL_QUADS, 0, 4);
-#endif
+                glDrawArrays(GL_QUADS, 0, 4);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
 			this->end();
 		}
 	};
