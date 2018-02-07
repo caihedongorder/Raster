@@ -11,8 +11,7 @@ namespace OpenGL
     {
 		struct Vertex
 		{
-			glm::vec3 position;
-			glm::vec3 color;
+			glm::vec2 position;
 		};
         enum{
             SECTION_SIZE = 32,
@@ -28,9 +27,13 @@ namespace OpenGL
         void Init(glm::ivec3 WorldSize , glm::vec3 WorldScale)
         {
             mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
+            mProgramDrawLineOrPoint.CreateProgram("shaders/terrain_line.vs","shaders/terrain_line.ps");
             mPositionLocation = glGetAttribLocation(mProgram.getProgram(),"vPosition");
+            mColorLocation = glGetUniformLocation(mProgram.getProgram(),"vColor");
+            mHeightLocation = glGetAttribLocation(mProgram.getProgram(),"vHeight");
 
-            std::vector<Vertex> verts; 
+            /* WorldSize = glm::vec3(1,1,1); */
+			/* WorldScale = glm::vec3(320, 1, 320); */
 
             SectionCount.x = (WorldSize.x + SECTION_SIZE - 1) >> SECTION_SHIFT;
             SectionCount.y = (WorldSize.z + SECTION_SIZE - 1) >> SECTION_SHIFT;
@@ -64,18 +67,13 @@ namespace OpenGL
             float currentX = startX;
             float currentZ = startZ;
 
-            std::vector<unsigned char> heightData;
-            heightData.resize(VertexCountX*VertexCountZ);
-            memset(&heightData[0],0,VertexCountX*VertexCountZ);
-            TerrainUtil::evaluateHeightMidReplace(0,0,VertexCountX-1,VertexCountZ-1,VertexCountX,128.0f,0.48f,&heightData[0]);
-            //TerrainUtil::evaluateHeightMidReplace(int left,int top,int right,int bottom,int stride,float delta,float rough,unsigned char* HeightData)
-            //
             
             //创建abo
             glGenVertexArrays(1,&mABO);
             glBindVertexArray(mABO);
 
             //创建vbo
+            std::vector<Vertex> verts; 
             for(int z = 0;z < VertexCountZ ; ++z)
             {
                 currentX = startX;
@@ -83,12 +81,7 @@ namespace OpenGL
                 {
                     Vertex vert;
                     vert.position.x = currentX;
-                    vert.position.z = currentZ;
-                    /* vert.position.y = heightData[z*VertexCountX+x]*0.1f; */
-                    /* vert.position.y = heightData[z*VertexCountX+x]; */
-                    vert.position.y = 0;
-
-                    vert.color.x = vert.color.y = vert.color.z = 1.0f;
+                    vert.position.y = currentZ;
 
                     verts.push_back(vert);
 
@@ -102,7 +95,47 @@ namespace OpenGL
 			glBindBuffer(GL_ARRAY_BUFFER, PositionVBO);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*verts.size(), &verts[0], GL_STATIC_DRAW);
             glEnableVertexAttribArray(mPositionLocation);
-            glVertexAttribPointer(mPositionLocation,3,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
+            glVertexAttribPointer(mPositionLocation,2,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            //创建高度 vbo
+            std::vector<unsigned char> heightData;
+            std::vector<unsigned char> heightDataProcessed;
+            int HeightCountX = VertexCountX * SectionCount.x;
+            int HeightCountY = VertexCountZ * SectionCount.y;
+            int RawCountX = ( VertexCountX - 1 ) * SectionCount.x + 1;
+            int RawCountY = ( VertexCountZ - 1 ) * SectionCount.y + 1;
+            heightData.resize( RawCountX * RawCountY );
+            memset(&heightData[0],0, RawCountX * RawCountY );
+            TerrainUtil::evaluateHeightMidReplace(0,0, RawCountX - 1 , RawCountY - 1 , RawCountX ,128.0f,0.48f,&heightData[0]);
+
+            heightDataProcessed.resize( HeightCountX * HeightCountY);
+            memset(&heightDataProcessed[0],0, HeightCountX * HeightCountY );
+
+            unsigned char* pDest = &heightDataProcessed[0];
+            unsigned char* pSrc = & heightData[0];
+            int DestStride = VertexCountX * VertexCountZ;
+            int SrcStride = RawCountX ;
+            for( int SectionY = 0; SectionY < SectionCount.y ; ++SectionY )
+                for ( int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX )
+                    for(int y = 0 ; y < VertexCountZ ; ++ y)
+                        memcpy(pDest + ( SectionCount.x * SectionY + SectionX ) * DestStride + y * VertexCountX ,
+                               pSrc + ( SectionY * ( VertexCountZ - 1 ) + y ) * SrcStride + SectionX * ( VertexCountX - 1 ) ,
+                               VertexCountX);
+
+            std::vector<float> fHeightDatas;
+            fHeightDatas.resize(heightDataProcessed.size());
+            for(int i = 0 ; i < fHeightDatas.size() ; ++ i)
+            {
+                fHeightDatas[i] = heightDataProcessed[i] / 255.0f;
+                /* fHeightDatas[i] = 0.5f; */
+            }
+
+            glGenBuffers(1,&mHeightVBO);
+            glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
+            /* glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY , &heightDataProcessed[0] , GL_STATIC_DRAW); */
+            glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY * sizeof(float) , &fHeightDatas[0] , GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
 
 
             // 创建索引
@@ -133,12 +166,12 @@ namespace OpenGL
 			glGenBuffers(1, &IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices.size(), &indices[0], GL_STATIC_DRAW);
-			glClearColor(0, 0, 0, 0);
 
             glBindVertexArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
 			glEnable(GL_CULL_FACE);
+			glClearColor(0, 0, 0, 0);
 			
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -146,7 +179,7 @@ namespace OpenGL
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(60, float(800)/ float(600), 1, 1200);
+			gluPerspective(60, float(800)/ float(600), 1, 12000);
 
 			RotationAngle = 0.0f;
 
@@ -159,48 +192,58 @@ namespace OpenGL
 		void OnRender(float InDeltaTime){
 			RotationAngle += InDeltaTime * 60;
 
-            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
             mProgram.begin();
+                glUniform4f(mColorLocation,1,0,0,1);
+                glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+                glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
                 OnRenderImpl();
+
+                //绘制线
+                /* glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); */
+                /* glUniform4f(mColorLocation,0,0,1,1); */
+                /* OnRenderImpl(0.1f); */
+
+
+
+                //绘制点
+                /* glPointSize(8.0f); */
+                /* glUniform4f(mColorLocation,0,1,1,1); */
+                /* glPolygonMode(GL_FRONT_AND_BACK,GL_POINT); */
+                /* OnRenderImpl(0.1f); */
+                /* glPointSize(1.0f); */
+
             mProgram.end();
-           
-            //绘制线
-            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-            glColor3f(0,0,1);
-            OnRenderImpl(0.1f);
-
-
-
-            //绘制点
-            glPointSize(8.0f);
-            glColor3f(0,1,1);
-            glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
-            OnRenderImpl(0.1f);
-            glPointSize(1.0f);
-
 
 		}
     private:
         void OnRenderImpl(float heightOffset = 0.0f){
             glBindVertexArray(mABO);
+            glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
+            glEnableVertexAttribArray(mHeightLocation);
             for(int SectionY = 0 ; SectionY < SectionCount.y ; ++SectionY )
             {
                 for(int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX )
                 {
                     glMatrixMode(GL_MODELVIEW);
                     glLoadIdentity();
-                    gluLookAt(0,CamY, 600, 0, 0, 0, 0, 1, 0);
+                    gluLookAt(0,CamY, 600 , 0, 0, 0, 0, 1, 0);
                     glRotatef(RotationAngle, 0, 1, 0);
                     auto& Section =  TerrainSections [ SectionY * SectionCount.x + SectionX ];
                     glTranslatef(Section.SectionPosition.x,0 + heightOffset, Section.SectionPosition.y);
 
+                    /* glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * SECTION_SIZE * SECTION_SIZE )); */
+                    glVertexAttribPointer(mHeightLocation,1,GL_FLOAT,GL_FALSE,sizeof( float ),(void*)( ( SectionY * SectionCount.x + SectionX) * SECTION_SIZE * SECTION_SIZE * sizeof(float) ));
+
                     glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
                 }
             }
+            glDisableVertexAttribArray(mHeightLocation);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
             glBindVertexArray(0);
         }
     private:
         GLuint mABO;
+        GLuint mHeightVBO;
 		int mIndexCount;
 		Raster::Image img;
 		float RotationAngle;
@@ -212,6 +255,9 @@ namespace OpenGL
         glm::vec2 SectionSize;
 
         GLSLProgram mProgram;
+        GLSLProgram mProgramDrawLineOrPoint;
         GLint mPositionLocation;
+        GLint mColorLocation;
+        GLint mHeightLocation;
     };
 }

@@ -33,8 +33,8 @@ namespace OpenGL
 
             std::vector<Vertex> verts; 
 
-            int VertexCountX = 64;
-            int VertexCountZ = 64;
+            int VertexCountX = 32;
+            int VertexCountZ = 32;
             float Step = 10;
             float startX = -Step * VertexCountX * 0.5f;
             float startZ = -Step * VertexCountZ * 0.5f;
