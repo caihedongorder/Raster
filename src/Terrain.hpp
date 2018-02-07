@@ -123,17 +123,10 @@ namespace OpenGL
                                pSrc + ( SectionY * ( VertexCountZ - 1 ) + y ) * SrcStride + SectionX * ( VertexCountX - 1 ) ,
                                VertexCountX);
 
-            std::vector<float> fHeightDatas;
-            fHeightDatas.resize(heightDataProcessed.size());
-            for(int i = 0 ; i < fHeightDatas.size() ; ++ i)
-            {
-                fHeightDatas[i] = heightDataProcessed[i] / 255.0f;
-            }
 
             glGenBuffers(1,&mHeightVBO);
             glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
-            /* glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY , &heightDataProcessed[0] , GL_STATIC_DRAW); */
-            glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY * sizeof(float) , &fHeightDatas[0] , GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY , &heightDataProcessed[0] , GL_STATIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER,0);
 
 
@@ -228,8 +221,7 @@ namespace OpenGL
                     auto& Section =  TerrainSections [ SectionY * SectionCount.x + SectionX ];
                     glTranslatef(Section.SectionPosition.x,0 + heightOffset, Section.SectionPosition.y);
 
-                    /* glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * SECTION_SIZE * SECTION_SIZE )); */
-                    glVertexAttribPointer(mHeightLocation,1,GL_FLOAT,GL_FALSE,sizeof( float ),(void*)( ( SectionY * SectionCount.x + SectionX) * SECTION_SIZE * SECTION_SIZE * sizeof(float) ));
+                    glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * SECTION_SIZE * SECTION_SIZE ));
 
                     glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
                 }

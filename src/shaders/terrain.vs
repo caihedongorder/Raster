@@ -5,7 +5,7 @@ varying vec4 outColor;
 void main()
 {
     float height = vHeight ;
-    float HeightScale = 2550.0* 2;
+    float HeightScale = 2550.0* 3;
     gl_Position = gl_ModelViewProjectionMatrix * vec4(vPosition.x, height* HeightScale ,vPosition.y,1);
     /* height = 0.5; */
     outColor = vec4(0 , height , 0,1.0);
