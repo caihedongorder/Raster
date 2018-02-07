@@ -31,9 +31,9 @@ namespace OpenGL
             mPositionLocation = glGetAttribLocation(mProgram.getProgram(),"vPosition");
             mColorLocation = glGetUniformLocation(mProgram.getProgram(),"vColor");
             mHeightLocation = glGetAttribLocation(mProgram.getProgram(),"vHeight");
+            mIsDrawLineLocation = glGetUniformLocation(mProgram.getProgram(),"IsDrawLine");
+            mHeightScaleLocation = glGetUniformLocation(mProgram.getProgram(),"heightScale");
 
-            /* WorldSize = glm::vec3(4,1,4); */
-			/* WorldScale = glm::vec3(3200, 1, 3200); */
 
             SectionCount.x = (WorldSize.x + SECTION_SIZE - 1) >> SECTION_SHIFT;
             SectionCount.y = (WorldSize.z + SECTION_SIZE - 1) >> SECTION_SHIFT;
@@ -174,33 +174,34 @@ namespace OpenGL
 			RotationAngle = 0.0f;
 
 			CamYMaxValue = 450;
-			CamY = 15000;
+			CamY = 5000;
 			CamChangeSpeed = -CamYMaxValue;
 
         }
 
 		void OnRender(float InDeltaTime){
-			RotationAngle += InDeltaTime * 60;
+			RotationAngle += InDeltaTime * 10;
 
             mProgram.begin();
                 glUniform4f(mColorLocation,1,0,0,1);
+                glUniform1f(mHeightScaleLocation,2550.0f*3);
+                glUniform1i(mIsDrawLineLocation,0);
                 glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-                /* glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); */
                 OnRenderImpl();
+                
 
+                glUniform1i(mIsDrawLineLocation,1);
                 //绘制线
-                /* glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); */
-                /* glUniform4f(mColorLocation,0,0,1,1); */
-                /* OnRenderImpl(0.1f); */
-
-
+                glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+                glUniform4f(mColorLocation,0,0,1,1);
+                OnRenderImpl(0.1f);
 
                 //绘制点
-                /* glPointSize(8.0f); */
-                /* glUniform4f(mColorLocation,0,1,1,1); */
-                /* glPolygonMode(GL_FRONT_AND_BACK,GL_POINT); */
-                /* OnRenderImpl(0.1f); */
-                /* glPointSize(1.0f); */
+                glPointSize(8.0f);
+                glUniform4f(mColorLocation,0,1,1,1);
+                glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
+                OnRenderImpl(0.1f);
+                glPointSize(1.0f);
 
             mProgram.end();
 
@@ -216,7 +217,7 @@ namespace OpenGL
                 {
                     glMatrixMode(GL_MODELVIEW);
                     glLoadIdentity();
-                    gluLookAt(0,CamY, 30000 , 0, 0, 0, 0, 1, 0);
+                    gluLookAt(0,CamY, 3000 , 0, 0, 0, 0, 1, 0);
                     glRotatef(RotationAngle, 0, 1, 0);
                     auto& Section =  TerrainSections [ SectionY * SectionCount.x + SectionX ];
                     glTranslatef(Section.SectionPosition.x,0 + heightOffset, Section.SectionPosition.y);
@@ -248,5 +249,7 @@ namespace OpenGL
         GLint mPositionLocation;
         GLint mColorLocation;
         GLint mHeightLocation;
+        GLint mIsDrawLineLocation;
+        GLint mHeightScaleLocation;
     };
 }
