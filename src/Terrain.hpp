@@ -32,8 +32,8 @@ namespace OpenGL
             mColorLocation = glGetUniformLocation(mProgram.getProgram(),"vColor");
             mHeightLocation = glGetAttribLocation(mProgram.getProgram(),"vHeight");
 
-            /* WorldSize = glm::vec3(1,1,1); */
-			/* WorldScale = glm::vec3(320, 1, 320); */
+            /* WorldSize = glm::vec3(4,1,4); */
+			/* WorldScale = glm::vec3(3200, 1, 3200); */
 
             SectionCount.x = (WorldSize.x + SECTION_SIZE - 1) >> SECTION_SHIFT;
             SectionCount.y = (WorldSize.z + SECTION_SIZE - 1) >> SECTION_SHIFT;
@@ -128,7 +128,6 @@ namespace OpenGL
             for(int i = 0 ; i < fHeightDatas.size() ; ++ i)
             {
                 fHeightDatas[i] = heightDataProcessed[i] / 255.0f;
-                /* fHeightDatas[i] = 0.5f; */
             }
 
             glGenBuffers(1,&mHeightVBO);
@@ -171,20 +170,18 @@ namespace OpenGL
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
 			glEnable(GL_CULL_FACE);
+			glEnable(GL_DEPTH_TEST);
+            glDisable(GL_BLEND);
 			glClearColor(0, 0, 0, 0);
 			
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			gluLookAt(100, 0, 4000, 0, 0, 0, 0, 1, 0);
-
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(60, float(800)/ float(600), 1, 12000);
+			gluPerspective(60, float(800)/ float(600), 1, 120000);
 
 			RotationAngle = 0.0f;
 
 			CamYMaxValue = 450;
-			CamY = 500;
+			CamY = 15000;
 			CamChangeSpeed = -CamYMaxValue;
 
         }
@@ -195,7 +192,7 @@ namespace OpenGL
             mProgram.begin();
                 glUniform4f(mColorLocation,1,0,0,1);
                 glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-                glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+                /* glPolygonMode(GL_FRONT_AND_BACK,GL_LINE); */
                 OnRenderImpl();
 
                 //绘制线
@@ -226,7 +223,7 @@ namespace OpenGL
                 {
                     glMatrixMode(GL_MODELVIEW);
                     glLoadIdentity();
-                    gluLookAt(0,CamY, 600 , 0, 0, 0, 0, 1, 0);
+                    gluLookAt(0,CamY, 30000 , 0, 0, 0, 0, 1, 0);
                     glRotatef(RotationAngle, 0, 1, 0);
                     auto& Section =  TerrainSections [ SectionY * SectionCount.x + SectionX ];
                     glTranslatef(Section.SectionPosition.x,0 + heightOffset, Section.SectionPosition.y);
