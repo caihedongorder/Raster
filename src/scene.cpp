@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "Camera.hpp"
 #include "GameTime.hpp"
 #include "Samples/DrawPointSample.hpp"
 #include "Samples/DrawLineSample.hpp"
@@ -34,7 +35,7 @@ std::shared_ptr<OpenGL::RenderSample> Sample ;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-void Init()
+void Init(OpenGL::Camera* InCam)
 {
 
 	//Raster::RenderSample* Sample = new Raster::DrawPoint(Width, Height);
@@ -64,6 +65,7 @@ void Init()
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndices(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndicesIBO(SCREEN_WIDTH,SCREEN_HEIGHT));
     Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrain(SCREEN_WIDTH,SCREEN_HEIGHT));
+    Sample->SetCamera(InCam);
 	/* Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrainHeightMidReplace(SCREEN_WIDTH,SCREEN_HEIGHT)); */
 	/* Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawPerlinTexture(SCREEN_WIDTH,SCREEN_HEIGHT)); */
     

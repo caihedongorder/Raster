@@ -15,7 +15,7 @@ namespace OpenGL
 			mHeight = height;
 		}
 		void OnInit() {
-            mTerrain.Init(glm::ivec3(256,25,256),glm::vec3(100,100,100));
+            mTerrain.Init(glm::ivec3(256,25,256),glm::vec3(100,100,100),mCam);
 		}
 		void OnRender(float InDeltaTime){
             mTerrain.OnRender(InDeltaTime);

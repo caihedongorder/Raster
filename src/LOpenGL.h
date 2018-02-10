@@ -5,6 +5,9 @@
 #include <gl/freeglut.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #endif
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "lopengl.h"
 #include "TerrainUtil.hpp"
+#include "Camera.hpp"
 
 namespace OpenGL
 {
@@ -24,8 +25,10 @@ namespace OpenGL
         ~Terrain(){
 
         }
-        void Init(glm::ivec3 WorldSize , glm::vec3 WorldScale)
+        void Init(glm::ivec3 WorldSize , glm::vec3 WorldScale,Camera* InCam)
         {
+            mCamera = InCam;
+
             mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
             mProgramDrawLineOrPoint.CreateProgram("shaders/terrain_line.vs","shaders/terrain_line.ps");
             mPositionLocation = glGetAttribLocation(mProgram.getProgram(),"vPosition");
@@ -177,20 +180,20 @@ namespace OpenGL
 			CamY = 5000;
 			CamChangeSpeed = -CamYMaxValue;
 
-            mProjectionMatrix = glm::perspective(glm::radians(60.0f),float(800)/float(600),1.0f,12000.0f);
-            mViewMatrix = glm::lookAt(
+            mCamera->setProjection(60,800.0f/600.0f,1.0f,12000.0f);
+            mCamera->setView(
                                       glm::vec3(0,CamY,3000),
                                       glm::vec3(0,0,0),
                                       glm::vec3(0,1,0)
-                                     );
+                           );
         }
 
 		void OnRender(float InDeltaTime){
 			RotationAngle += InDeltaTime * 10;
 
             mProgram.begin();
-                glUniformMatrix4fv(mViewMatrixLocation,1,GL_FALSE,glm::value_ptr(mViewMatrix));
-                glUniformMatrix4fv(mProjectionMatrixLocation,1,GL_FALSE,glm::value_ptr(mProjectionMatrix));
+                glUniformMatrix4fv(mViewMatrixLocation,1,GL_FALSE,glm::value_ptr(mCamera->getViewMatrix()));
+                glUniformMatrix4fv(mProjectionMatrixLocation,1,GL_FALSE,glm::value_ptr(mCamera->getProjectionMatrix()));
 
                 glUniform4f(mColorLocation,1,0,0,1);
                 glUniform1f(mHeightScaleLocation,2550.0f*3);
@@ -227,7 +230,7 @@ namespace OpenGL
                     auto& Section =  TerrainSections [ SectionY * SectionCount.x + SectionX ];
 
                     mModelMatrix = glm::mat4(1.0f);
-                    mModelMatrix = glm::rotate(mModelMatrix,glm::radians(RotationAngle),glm::vec3(0.0f,1.0f,0.0f));
+                    /* mModelMatrix = glm::rotate(mModelMatrix,glm::radians(RotationAngle),glm::vec3(0.0f,1.0f,0.0f)); */
                     mModelMatrix = glm::translate(mModelMatrix,glm::vec3(Section.SectionPosition.x,0 + heightOffset, Section.SectionPosition.y));
 
                     glUniformMatrix4fv(mModelMatrixLocation,1,GL_FALSE,glm::value_ptr(mModelMatrix));
@@ -255,8 +258,6 @@ namespace OpenGL
         glm::vec2 SectionSize;
 
         glm::mat4 mModelMatrix;
-        glm::mat4 mViewMatrix;
-        glm::mat4 mProjectionMatrix;
 
         GLSLProgram mProgram;
         GLSLProgram mProgramDrawLineOrPoint;
@@ -268,5 +269,6 @@ namespace OpenGL
         GLint mModelMatrixLocation;
         GLint mViewMatrixLocation;
         GLint mProjectionMatrixLocation;
+        Camera * mCamera;
     };
 }
