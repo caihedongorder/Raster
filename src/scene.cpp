@@ -64,11 +64,11 @@ void Init(OpenGL::Camera* InCam)
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeVBOMapBuffer(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndices(SCREEN_WIDTH,SCREEN_HEIGHT));
 	//Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawCubeIndicesIBO(SCREEN_WIDTH,SCREEN_HEIGHT));
-    Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrain(SCREEN_WIDTH,SCREEN_HEIGHT));
-    Sample->SetCamera(InCam);
+    Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrain(SCREEN_WIDTH,SCREEN_HEIGHT)); 
 	/* Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawTerrainHeightMidReplace(SCREEN_WIDTH,SCREEN_HEIGHT)); */
 	/* Sample = std::shared_ptr<OpenGL::RenderSample>(new OpenGL::DrawPerlinTexture(SCREEN_WIDTH,SCREEN_HEIGHT)); */
     
+    Sample->SetCamera(InCam);
 	Sample->OnInit();
 }
 

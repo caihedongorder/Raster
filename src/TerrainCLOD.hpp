@@ -5,10 +5,10 @@
 
 namespace OpenGL
 {
-    struct TerrainSection{
+    struct TerrainSectionCLOD{
         glm::vec2 SectionPosition;
     };
-    class Terrain
+    class TerrainCLOD
     {
 		struct Vertex
 		{
@@ -19,15 +19,51 @@ namespace OpenGL
             SECTION_SHIFT = 5,
         };
     public:
-        Terrain(){
+        TerrainCLOD(){
 
         }
-        ~Terrain(){
+        ~TerrainCLOD(){
 
         }
         void Init(glm::ivec3 WorldSize , glm::vec3 WorldScale,Camera* InCam)
         {
             mCamera = InCam;
+
+            SectionCount.x = (WorldSize.x + SECTION_SIZE - 1) >> SECTION_SHIFT;
+            SectionCount.y = (WorldSize.z + SECTION_SIZE - 1) >> SECTION_SHIFT;
+            SectionSize.x = (float)WorldSize.x / (float)SectionCount.x * WorldScale.x;
+            SectionSize.y = (float)WorldSize.z / (float)SectionCount.y * WorldScale.z;
+
+            int VertexCountX = SECTION_SIZE + 1;
+            int VertexCountZ = SECTION_SIZE + 1;
+            //创建高度 vbo
+            std::vector<unsigned char> heightData;
+            std::vector<unsigned char> heightDataProcessed;
+            int HeightCountX = WorldSize.x;
+            int HeightCountY = WorldSize.z;
+            heightData.resize( HeightCountX * HeightCountY );
+            memset(&heightData[0],0, heightData.size() );
+            TerrainUtil::evaluateHeightMidReplace(0,0, HeightCountX - 1 , HeightCountY - 1 , HeightCountX ,128.0f,0.48f,&heightData[0]);
+
+            heightDataProcessed.resize( HeightCountX * HeightCountY);
+            memset(&heightDataProcessed[0],0, HeightCountX * HeightCountY );
+
+            unsigned char* pDest = &heightDataProcessed[0];
+            unsigned char* pSrc = & heightData[0];
+            int DestStride = VertexCountX * VertexCountZ;
+            int SrcStride = HeightCountX ;
+
+            for( int SectionY = 0; SectionY < SectionCount.y ; ++SectionY )
+                for ( int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX )
+                    for(int y = 0 ; y < VertexCountZ ; ++ y)
+                        for(int x = 0 ; x < VertexCountX ; ++ x)
+                            heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 
+                                heightData [ ( SectionY * SECTION_SIZE + ( y >> 0 ) ) * SrcStride + ( SectionX * SECTION_SIZE ) + ( x >> 0 )  ];
+
+            glGenBuffers(1,&mHeightVBO);
+            glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
+            glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY , &heightDataProcessed[0] , GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
 
             mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
             mProgramDrawLineOrPoint.CreateProgram("shaders/terrain_line.vs","shaders/terrain_line.ps");
@@ -41,10 +77,6 @@ namespace OpenGL
             mProjectionMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"P");
 
 
-            SectionCount.x = (WorldSize.x + SECTION_SIZE - 1) >> SECTION_SHIFT;
-            SectionCount.y = (WorldSize.z + SECTION_SIZE - 1) >> SECTION_SHIFT;
-            SectionSize.x = (float)WorldSize.x / (float)SectionCount.x * WorldScale.x;
-            SectionSize.y = (float)WorldSize.z / (float)SectionCount.y * WorldScale.z;
 
             float WorldSizeStartX = - WorldSize.x * 0.5f * WorldScale.x ;
             float WorldSizeStartY = - WorldSize.z * 0.5f * WorldScale.z ;
@@ -64,8 +96,6 @@ namespace OpenGL
                 CurrentSectionPositon.y += SectionSize.y ;
             }
 
-            int VertexCountX = SECTION_SIZE;
-            int VertexCountZ = SECTION_SIZE;
             float StepX = SectionSize.x / (VertexCountX - 1) ;
             float StepY = SectionSize.y / (VertexCountZ - 1) ;
             float startX = 0;
@@ -104,43 +134,6 @@ namespace OpenGL
             glVertexAttribPointer(mPositionLocation,2,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-            //创建高度 vbo
-            std::vector<unsigned char> heightData;
-            std::vector<unsigned char> heightDataProcessed;
-            int HeightCountX = VertexCountX * SectionCount.x;
-            int HeightCountY = VertexCountZ * SectionCount.y;
-            int RawCountX = ( VertexCountX - 1 ) * SectionCount.x + 1;
-            int RawCountY = ( VertexCountZ - 1 ) * SectionCount.y + 1;
-            heightData.resize( RawCountX * RawCountY );
-            memset(&heightData[0],0, RawCountX * RawCountY );
-            TerrainUtil::evaluateHeightMidReplace(0,0, RawCountX - 1 , RawCountY - 1 , RawCountX ,128.0f,0.48f,&heightData[0]);
-
-            heightDataProcessed.resize( HeightCountX * HeightCountY);
-            memset(&heightDataProcessed[0],0, HeightCountX * HeightCountY );
-
-            unsigned char* pDest = &heightDataProcessed[0];
-            unsigned char* pSrc = & heightData[0];
-            int DestStride = VertexCountX * VertexCountZ;
-            int SrcStride = RawCountX ;
-
-            /* for( int SectionY = 0; SectionY < SectionCount.y ; ++SectionY ) */
-            /*     for ( int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX ) */
-            /*         for(int y = 0 ; y < VertexCountZ ; ++ y) */
-            /*             memcpy(pDest + ( SectionCount.x * SectionY + SectionX ) * DestStride + y * VertexCountX , */
-            /*                    pSrc + ( SectionY * ( VertexCountZ - 1 ) + y ) * SrcStride + SectionX * ( VertexCountX - 1 ) , */
-            /*                    VertexCountX); */
-
-            for( int SectionY = 0; SectionY < SectionCount.y ; ++SectionY )
-                for ( int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX )
-                    for(int y = 0 ; y < VertexCountZ ; ++ y)
-                        for(int x = 0 ; x < VertexCountX ; ++ x)
-                            heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 
-                                heightData [ ( SectionY * SECTION_SIZE + ( y >> 0 ) ) * SrcStride + ( SectionX * SECTION_SIZE ) + ( x >> 0 )  ];
-
-            glGenBuffers(1,&mHeightVBO);
-            glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
-            glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY , &heightDataProcessed[0] , GL_STATIC_DRAW);
-            glBindBuffer(GL_ARRAY_BUFFER,0);
 
 
             // 创建索引

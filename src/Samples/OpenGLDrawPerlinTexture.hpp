@@ -22,9 +22,24 @@ namespace OpenGL
 			auto img = Raster::Image::LoadFromFile("images/tiger.png");
 
             std::vector<unsigned char> heightData;
-            heightData.resize( mWidth * mHeight );
+            heightData.resize( 1025 * 1025 );
             /* TerrainUtil::evaluateHeightMidReplace(0,0,mWidth-1,mHeight-1,mWidth,128,0.5f,&heightData[0]); */
+            TerrainUtil::evaluateHeightMidReplace(0,0,1025-1,1025-1,1025,128,0.5f,&heightData[0]); 
 
+#if 1
+            std::vector<unsigned char> imgData;
+            imgData.resize(1025 * 1025 * 4);
+            int nStride = 1025 * 4 ;
+            for(int y = 0 ; y < 1025 ; ++y )
+                for(int x = 0 ; x < 1025 ; ++x )
+                {
+                    unsigned char height =  heightData[ y * 1025 + x ];
+                    imgData[y*nStride + x*4     ] = height;
+                    imgData[y*nStride + x*4 + 1 ] = height;
+                    imgData[y*nStride + x*4 + 2 ] = height;
+                    imgData[y*nStride + x*4 + 3 ] = height;
+                }
+#else
             std::vector<unsigned char> imgData;
             imgData.resize(mWidth * mHeight * 4);
             int nStride = mWidth * 4 ;
@@ -43,10 +58,13 @@ namespace OpenGL
                     imgData[y*nStride + x*4 + 3 ] = height;
                 }
 
+#endif
+
 
 			glGenTextures(1, &texture);
 			glBindTexture(GL_TEXTURE_2D, texture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth,mHeight, 0, GL_RGBA	, GL_UNSIGNED_BYTE, &imgData[0]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1025,1025, 0, GL_RGBA	, GL_UNSIGNED_BYTE, &imgData[0]);
+			//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mWidth,mHeight, 0, GL_RGBA	, GL_UNSIGNED_BYTE, &imgData[0]);
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);  
 			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);  
 			glBindTexture(GL_TEXTURE_2D, 0);
