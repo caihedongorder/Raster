@@ -93,10 +93,10 @@ namespace OpenGL
                 for(int SectionX = 0 ; SectionX < SectionCount.x ; ++ SectionX )
                 {
                     auto& Section = TerrainSections[ SectionY * SectionCount.x + SectionX ];
-                    Section.SectionPosition = CurrentSectionPositon;
+                    glm::vec2 SectionPosition = CurrentSectionPositon;
 
                     Section.ModelMatrix = glm::mat4(1.0f);
-                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(Section.SectionPosition.x, 0 , Section.SectionPosition.y));
+                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(SectionPosition.x, 0 , SectionPosition.y));
 
                     CurrentSectionPositon.x += SectionSize.x ;
                 }
