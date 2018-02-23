@@ -25,22 +25,23 @@ namespace OpenGL
         ~TerrainCLOD(){
 
         }
-        void Init(glm::ivec3 WorldSize , glm::vec3 WorldScale,Camera* InCam)
+        void Init(glm::ivec3 InWorldSize , glm::vec3 InWorldScale,Camera* InCam)
         {
             mCamera = InCam;
 
-            SectionCount.x = (WorldSize.x - 1) >> SECTION_SHIFT;
-            SectionCount.y = (WorldSize.z - 1) >> SECTION_SHIFT;
-            SectionSize.x = (float)WorldSize.x / (float)SectionCount.x * WorldScale.x;
-            SectionSize.y = (float)WorldSize.z / (float)SectionCount.y * WorldScale.z;
+            WorldScale = InWorldSize;
+            SectionCount.x = (InWorldSize.x - 1) >> SECTION_SHIFT;
+            SectionCount.y = (InWorldSize.z - 1) >> SECTION_SHIFT;
+            SectionSize.x = (float)InWorldSize.x / (float)SectionCount.x * InWorldScale.x;
+            SectionSize.y = (float)InWorldSize.z / (float)SectionCount.y * InWorldScale.z;
 
             int VertexCountX = SECTION_SIZE + 1;
             int VertexCountZ = SECTION_SIZE + 1;
             //创建高度 vbo
             std::vector<unsigned char> heightData;
             std::vector<unsigned char> heightDataProcessed;
-            int HeightCountX = WorldSize.x;
-            int HeightCountY = WorldSize.z;
+            int HeightCountX = InWorldSize.x;
+            int HeightCountY = InWorldSize.z;
             heightData.resize( HeightCountX * HeightCountY );
             memset(&heightData[0],0, heightData.size() );
             TerrainUtil::evaluateHeightMidReplace(0,0, HeightCountX - 1 , HeightCountY - 1 , HeightCountX ,128.0f,0.48f,&heightData[0]);
@@ -80,8 +81,8 @@ namespace OpenGL
 
 
 
-            float WorldSizeStartX = - WorldSize.x * 0.5f * WorldScale.x ;
-            float WorldSizeStartY = - WorldSize.z * 0.5f * WorldScale.z ;
+            float WorldSizeStartX = - InWorldSize.x * 0.5f * InWorldScale.x ;
+            float WorldSizeStartY = - InWorldSize.z * 0.5f * InWorldScale.z ;
             glm::vec2 CurrentSectionPositon = glm::vec2( WorldSizeStartX , WorldSizeStartY );
 
             TerrainSections.resize( SectionCount.x * SectionCount.y );
@@ -258,6 +259,7 @@ namespace OpenGL
         std::vector<TerrainSection> TerrainSections;
         glm::ivec2 SectionCount;
         glm::vec2 SectionSize;
+        glm::vec3 WorldScale;
 
         glm::mat4 mModelMatrix;
 
