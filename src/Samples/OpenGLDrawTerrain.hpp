@@ -17,7 +17,8 @@ namespace OpenGL
 		}
 		void OnInit() {
             /* mTerrain.Init(glm::ivec3(1025,25,1025),glm::vec3(10000,10000,10000),mCam); */
-            mTerrain.Init(glm::ivec3(65,25,65),glm::vec3(6500,100,6500),mCam);
+            mTerrain.Init(glm::ivec3(1025,25,1025),glm::vec3(6500,100,6500),mCam);
+            /* mTerrain.Init(glm::ivec3(65,25,65),glm::vec3(6500,100,6500),mCam); */
             /* mTerrain.Init(glm::ivec3(256,25,256),glm::vec3(100,100,100),mCam); */
 		}
 		void OnRender(float InDeltaTime){

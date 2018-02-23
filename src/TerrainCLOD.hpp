@@ -86,6 +86,8 @@ namespace OpenGL
             glm::vec2 CurrentSectionPositon = glm::vec2( WorldSizeStartX , WorldSizeStartY );
 
             TerrainSections.resize( SectionCount.x * SectionCount.y );
+            glm::mat4 WorldScaleMat(1.0f);
+            WorldScaleMat = glm::scale( WorldScaleMat , glm::vec3(InWorldScale.x , 1.0f , InWorldScale.z ));
             for( int SectionY = 0 ; SectionY < SectionCount.y ; ++ SectionY )
             {
                 CurrentSectionPositon.x = WorldSizeStartX ;
@@ -95,8 +97,9 @@ namespace OpenGL
                     glm::vec2 SectionPosition = CurrentSectionPositon;
 
                     Section.ModelMatrix = glm::mat4(1.0f);
-                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(SectionPosition.x * InWorldScale.x, 0 , SectionPosition.y * InWorldScale.z));
-                    Section.ModelMatrix = glm::scale(Section.ModelMatrix,glm::vec3(InWorldScale.x , 1.0f , InWorldScale.z ));
+                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3( SectionPosition.x , 0 , SectionPosition.y ));
+
+                    Section.ModelMatrix = WorldScaleMat * Section.ModelMatrix ;
 
                     CurrentSectionPositon.x += SectionSize.x ;
                 }
@@ -105,10 +108,8 @@ namespace OpenGL
 
             float StepX = SectionSize.x / (VertexCountX - 1) ;
             float StepY = SectionSize.y / (VertexCountZ - 1) ;
-            float startX = 0;
-            float startZ = 0;
-            float currentX = startX;
-            float currentZ = startZ;
+            float currentX = 0;
+            float currentZ = 0;
 
             
             //创建abo
@@ -119,7 +120,7 @@ namespace OpenGL
             std::vector<Vertex> verts; 
             for(int z = 0;z < VertexCountZ ; ++z)
             {
-                currentX = startX;
+                currentX = 0;
                 for(int x = 0 ; x < VertexCountX ; ++x)
                 {
                     Vertex vert;
