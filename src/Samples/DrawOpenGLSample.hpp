@@ -9,6 +9,8 @@ namespace OpenGL
 	public:
 		RenderSample(){}
 		virtual void OnInit(){}
+        virtual void OnChar(char InCode) {
+        }
 		virtual void OnRender(float InDeltaTime){
 		}
         void SetCamera(Camera* InCam)

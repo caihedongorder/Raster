@@ -6,3 +6,4 @@
 void Init(OpenGL::Camera* InCam);
 void SetViewportSize(float width, float height);
 void Draw();
+void OnChar(char iCode);

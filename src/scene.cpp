@@ -72,6 +72,11 @@ void Init(OpenGL::Camera* InCam)
 	Sample->OnInit();
 }
 
+void OnChar(char iCode)
+{
+    Sample->OnChar(iCode);
+}
+
 void SetViewportSize(float width, float height)
 {
 }

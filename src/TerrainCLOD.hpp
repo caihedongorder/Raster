@@ -26,6 +26,15 @@ namespace OpenGL
         ~TerrainCLOD(){
 
         }
+        void SetLOD(int iLod)
+        {
+            if( iLod >= mMaxLods ) return;
+            
+            for( auto & section : TerrainSections )
+            {
+                section.iLod = iLod;
+            }
+        }
         void Init(glm::ivec3 InWorldSize , glm::vec3 InWorldScale,Camera* InCam)
         {
             mCamera = InCam;
@@ -72,6 +81,15 @@ namespace OpenGL
                     CurrentSectionPositon.x += SectionSize.x ;
                 }
                 CurrentSectionPositon.y += SectionSize.y ;
+            }
+
+            //计算最大lod数
+            int sz = SECTION_SIZE;
+            mMaxLods = 1;
+            while( sz > 1 )
+            {
+                ++mMaxLods;
+                sz >>= 1;
             }
 
             //创建高度 vbo

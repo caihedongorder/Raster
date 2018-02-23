@@ -15,6 +15,9 @@ namespace OpenGL
 			mWidth = width;
 			mHeight = height;
 		}
+        virtual void OnChar(char InCode) {
+            mTerrain.SetLOD( InCode - '0' ) ;
+        }
 		void OnInit() {
             /* mTerrain.Init(glm::ivec3(1025,25,1025),glm::vec3(10000,10000,10000),mCam); */
             mTerrain.Init(glm::ivec3(1025,25,1025),glm::vec3(10000,100,10000),mCam);
