@@ -7,7 +7,7 @@ namespace OpenGL
 {
     struct TerrainSectionCLOD{
         glm::mat4 ModelMatrix;
-        int iLod = 0;
+        int iLod = 1;
     };
     class TerrainCLOD
     {
@@ -101,7 +101,8 @@ namespace OpenGL
                         for(int y = 0 ; y < VertexCountZ ; ++ y)
                             for(int x = 0 ; x < VertexCountX ; ++ x)
                                 heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 
-                                    heightData [ ( SectionY * SECTION_SIZE + ( y >> iLod ) ) * SrcStride + ( SectionX * SECTION_SIZE ) + ( x >> iLod )  ];
+                                    heightData [ ( SectionY * SECTION_SIZE + ( y << iLod ) ) * SrcStride + ( SectionX * SECTION_SIZE ) + ( x << iLod )  ];
+                                /* heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 128; */
 
                 GLuint heightVBO;
                 glGenBuffers(1,&heightVBO);
@@ -239,7 +240,7 @@ namespace OpenGL
                     glUniformMatrix4fv(mModelMatrixLocation,1,GL_FALSE,glm::value_ptr(Section.ModelMatrix));
 
                     glBindBuffer(GL_ARRAY_BUFFER,mHeightVBOs[ Section.iLod ]);
-                    glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * ( SECTION_SIZE + 1 ) * (SECTION_SIZE + 1 )));
+                    glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * ( ( SECTION_SIZE >> Section.iLod ) + 1 ) * ( ( SECTION_SIZE >> Section.iLod ) + 1 )));
 
 
                     glBindBuffer(GL_ARRAY_BUFFER, mPositionVBOs[ Section.iLod ] );
