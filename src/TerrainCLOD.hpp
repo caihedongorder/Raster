@@ -6,7 +6,6 @@
 namespace OpenGL
 {
     struct TerrainSectionCLOD{
-        glm::vec2 SectionPosition;
         glm::mat4 ModelMatrix;
     };
     class TerrainCLOD
@@ -33,8 +32,9 @@ namespace OpenGL
             WorldScale = InWorldSize;
             SectionCount.x = (InWorldSize.x - 1) >> SECTION_SHIFT;
             SectionCount.y = (InWorldSize.z - 1) >> SECTION_SHIFT;
-            SectionSize.x = (float)InWorldSize.x / (float)SectionCount.x * InWorldScale.x;
-            SectionSize.y = (float)InWorldSize.z / (float)SectionCount.y * InWorldScale.z;
+            glm::vec2 SectionSize;
+            SectionSize.x = 1.0f / SectionCount.x;
+            SectionSize.y = 1.0f / SectionCount.y;
 
             int VertexCountX = SECTION_SIZE + 1;
             int VertexCountZ = SECTION_SIZE + 1;
@@ -62,7 +62,6 @@ namespace OpenGL
                         for(int x = 0 ; x < VertexCountX ; ++ x)
                             heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 
                                 heightData [ ( SectionY * SECTION_SIZE + ( y >> 0 ) ) * SrcStride + ( SectionX * SECTION_SIZE ) + ( x >> 0 )  ];
-                            /* heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 128; */
 
             glGenBuffers(1,&mHeightVBO);
             glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
@@ -82,8 +81,8 @@ namespace OpenGL
 
 
 
-            float WorldSizeStartX = - InWorldSize.x * 0.5f * InWorldScale.x ;
-            float WorldSizeStartY = - InWorldSize.z * 0.5f * InWorldScale.z ;
+            float WorldSizeStartX = - 0.5f ;
+            float WorldSizeStartY = - 0.5f ;
             glm::vec2 CurrentSectionPositon = glm::vec2( WorldSizeStartX , WorldSizeStartY );
 
             TerrainSections.resize( SectionCount.x * SectionCount.y );
@@ -97,6 +96,7 @@ namespace OpenGL
 
                     Section.ModelMatrix = glm::mat4(1.0f);
                     Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(SectionPosition.x, 0 , SectionPosition.y));
+                    Section.ModelMatrix = glm::scale(Section.ModelMatrix,glm::vec3(InWorldScale.x , 1.0f , InWorldScale.z ));
 
                     CurrentSectionPositon.x += SectionSize.x ;
                 }
@@ -258,7 +258,6 @@ namespace OpenGL
 		float CamChangeSpeed;
         std::vector<TerrainSectionCLOD> TerrainSections;
         glm::ivec2 SectionCount;
-        glm::vec2 SectionSize;
         glm::vec3 WorldScale;
 
 
