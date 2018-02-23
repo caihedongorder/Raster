@@ -7,6 +7,7 @@ namespace OpenGL
 {
     struct TerrainSectionCLOD{
         glm::mat4 ModelMatrix;
+        int iLod = 0;
     };
     class TerrainCLOD
     {
@@ -117,43 +118,48 @@ namespace OpenGL
             glBindVertexArray(mABO);
 
             //创建vbo
-            int VertexCountX = (SECTION_SIZE >> 0) + 1;
-            int VertexCountZ = (SECTION_SIZE >> 0) + 1;
-            float StepX = SectionSize.x / (VertexCountX - 1) ;
-            float StepY = SectionSize.y / (VertexCountZ - 1) ;
-            float currentX = 0;
-            float currentZ = 0;
-            std::vector<Vertex> verts; 
-            for(int z = 0;z < VertexCountZ ; ++z)
+            for( int iLod = 0 ; iLod < mMaxLods ; ++iLod )
             {
-                currentX = 0;
-                for(int x = 0 ; x < VertexCountX ; ++x)
+                int VertexCountX = (SECTION_SIZE >> iLod) + 1;
+                int VertexCountZ = (SECTION_SIZE >> iLod) + 1;
+                float StepX = SectionSize.x / ( VertexCountX - 1 ) ;
+                float StepY = SectionSize.y / ( VertexCountZ - 1 ) ;
+                float currentX = 0;
+                float currentZ = 0;
+                std::vector<Vertex> verts; 
+                for(int z = 0;z < VertexCountZ ; ++z)
                 {
-                    Vertex vert;
-                    vert.position.x = currentX;
-                    vert.position.y = currentZ;
+                    currentX = 0;
+                    for(int x = 0 ; x < VertexCountX ; ++x)
+                    {
+                        Vertex vert;
+                        vert.position.x = currentX;
+                        vert.position.y = currentZ;
 
-                    verts.push_back(vert);
+                        verts.push_back(vert);
 
-                    currentX +=StepX;
+                        currentX +=StepX;
+                    }
+                    currentZ += StepY;
                 }
-                currentZ += StepY;
+
+                GLuint PositionVBO;
+                glGenBuffers(1, &PositionVBO);
+                glBindBuffer(GL_ARRAY_BUFFER, PositionVBO);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*verts.size(), &verts[0], GL_STATIC_DRAW);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                mPositionVBOs.push_back( PositionVBO ) ;
             }
-            
-            GLuint PositionVBO;
-			glGenBuffers(1, &PositionVBO);
-			glBindBuffer(GL_ARRAY_BUFFER, PositionVBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*verts.size(), &verts[0], GL_STATIC_DRAW);
-            glEnableVertexAttribArray(mPositionLocation);
-            glVertexAttribPointer(mPositionLocation,2,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
 
             // 创建索引
+            int VertexCountX = (SECTION_SIZE >> 0) + 1;
+            int VertexCountZ = (SECTION_SIZE >> 0) + 1;
             std::vector<GLuint> indices;
-            currentX = 0;
-            currentZ = 0;
+            float currentX = 0;
+            float currentZ = 0;
             for(int z = 0 ; z < VertexCountZ - 1 ; ++z)
             {
                 currentX = 0;
@@ -235,8 +241,8 @@ namespace OpenGL
     private:
         void OnRenderImpl(float heightOffset = 0.0f){
             glBindVertexArray(mABO);
-            glBindBuffer(GL_ARRAY_BUFFER,mHeightVBOs[0]);
             glEnableVertexAttribArray(mHeightLocation);
+            glEnableVertexAttribArray(mPositionLocation);
             for(int SectionY = 0 ; SectionY < SectionCount.y ; ++SectionY )
             {
                 for(int SectionX = 0 ; SectionX < SectionCount.x ; ++SectionX )
@@ -245,18 +251,25 @@ namespace OpenGL
 
                     glUniformMatrix4fv(mModelMatrixLocation,1,GL_FALSE,glm::value_ptr(Section.ModelMatrix));
 
+                    glBindBuffer(GL_ARRAY_BUFFER,mHeightVBOs[ Section.iLod ]);
                     glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * ( SECTION_SIZE + 1 ) * (SECTION_SIZE + 1 )));
+
+
+                    glBindBuffer(GL_ARRAY_BUFFER, mPositionVBOs[ Section.iLod ] );
+                    glVertexAttribPointer(mPositionLocation,2,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
 
                     glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
                 }
             }
             glDisableVertexAttribArray(mHeightLocation);
+            glDisableVertexAttribArray(mPositionLocation);
             glBindBuffer(GL_ARRAY_BUFFER,0);
             glBindVertexArray(0);
         }
     private:
         GLuint mABO;
         std::vector<GLuint> mHeightVBOs;
+        std::vector<GLuint> mPositionVBOs;
 		int mIndexCount;
 		Raster::Image img;
 		float RotationAngle;
