@@ -7,6 +7,7 @@ namespace OpenGL
 {
     struct TerrainSectionCLOD{
         glm::vec2 SectionPosition;
+        glm::mat4 ModelMatrix;
     };
     class TerrainCLOD
     {
@@ -93,6 +94,9 @@ namespace OpenGL
                 {
                     auto& Section = TerrainSections[ SectionY * SectionCount.x + SectionX ];
                     Section.SectionPosition = CurrentSectionPositon;
+
+                    Section.ModelMatrix = glm::mat4(1.0f);
+                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(Section.SectionPosition.x, 0 , Section.SectionPosition.y));
 
                     CurrentSectionPositon.x += SectionSize.x ;
                 }
@@ -232,11 +236,7 @@ namespace OpenGL
                 {
                     auto& Section =  TerrainSections [ SectionY * SectionCount.x + SectionX ];
 
-                    mModelMatrix = glm::mat4(1.0f);
-                    /* mModelMatrix = glm::rotate(mModelMatrix,glm::radians(RotationAngle),glm::vec3(0.0f,1.0f,0.0f)); */
-                    mModelMatrix = glm::translate(mModelMatrix,glm::vec3(Section.SectionPosition.x,0 + heightOffset, Section.SectionPosition.y));
-
-                    glUniformMatrix4fv(mModelMatrixLocation,1,GL_FALSE,glm::value_ptr(mModelMatrix));
+                    glUniformMatrix4fv(mModelMatrixLocation,1,GL_FALSE,glm::value_ptr(Section.ModelMatrix));
 
                     glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * ( SECTION_SIZE + 1 ) * (SECTION_SIZE + 1 )));
 
@@ -256,12 +256,11 @@ namespace OpenGL
 		float CamY;
 		float CamYMaxValue;
 		float CamChangeSpeed;
-        std::vector<TerrainSection> TerrainSections;
+        std::vector<TerrainSectionCLOD> TerrainSections;
         glm::ivec2 SectionCount;
         glm::vec2 SectionSize;
         glm::vec3 WorldScale;
 
-        glm::mat4 mModelMatrix;
 
         GLSLProgram mProgram;
         GLSLProgram mProgramDrawLineOrPoint;
