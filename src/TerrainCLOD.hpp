@@ -29,8 +29,8 @@ namespace OpenGL
         {
             mCamera = InCam;
 
-            SectionCount.x = (WorldSize.x + SECTION_SIZE - 1) >> SECTION_SHIFT;
-            SectionCount.y = (WorldSize.z + SECTION_SIZE - 1) >> SECTION_SHIFT;
+            SectionCount.x = (WorldSize.x - 1) >> SECTION_SHIFT;
+            SectionCount.y = (WorldSize.z - 1) >> SECTION_SHIFT;
             SectionSize.x = (float)WorldSize.x / (float)SectionCount.x * WorldScale.x;
             SectionSize.y = (float)WorldSize.z / (float)SectionCount.y * WorldScale.z;
 
@@ -45,8 +45,9 @@ namespace OpenGL
             memset(&heightData[0],0, heightData.size() );
             TerrainUtil::evaluateHeightMidReplace(0,0, HeightCountX - 1 , HeightCountY - 1 , HeightCountX ,128.0f,0.48f,&heightData[0]);
 
-            heightDataProcessed.resize( HeightCountX * HeightCountY);
-            memset(&heightDataProcessed[0],0, HeightCountX * HeightCountY );
+			int heightDataProcessedCount = VertexCountX * VertexCountZ * SectionCount.x * SectionCount.y;
+            heightDataProcessed.resize(heightDataProcessedCount);
+            memset(&heightDataProcessed[0],0, heightDataProcessedCount );
 
             unsigned char* pDest = &heightDataProcessed[0];
             unsigned char* pSrc = & heightData[0];
@@ -59,10 +60,11 @@ namespace OpenGL
                         for(int x = 0 ; x < VertexCountX ; ++ x)
                             heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 
                                 heightData [ ( SectionY * SECTION_SIZE + ( y >> 0 ) ) * SrcStride + ( SectionX * SECTION_SIZE ) + ( x >> 0 )  ];
+                            /* heightDataProcessed [ ( SectionY * SectionCount.x + SectionX ) * DestStride + y*VertexCountX + x ] = 128; */
 
             glGenBuffers(1,&mHeightVBO);
             glBindBuffer(GL_ARRAY_BUFFER,mHeightVBO);
-            glBufferData(GL_ARRAY_BUFFER, HeightCountX * HeightCountY , &heightDataProcessed[0] , GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, heightDataProcessedCount , &heightDataProcessed[0] , GL_STATIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER,0);
 
             mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
@@ -235,7 +237,7 @@ namespace OpenGL
 
                     glUniformMatrix4fv(mModelMatrixLocation,1,GL_FALSE,glm::value_ptr(mModelMatrix));
 
-                    glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * SECTION_SIZE * SECTION_SIZE ));
+                    glVertexAttribPointer(mHeightLocation,1,GL_UNSIGNED_BYTE,GL_TRUE,0,(void*)( ( SectionY * SectionCount.x + SectionX) * ( SECTION_SIZE + 1 ) * (SECTION_SIZE + 1 )));
 
                     glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
                 }
