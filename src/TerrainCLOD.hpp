@@ -106,17 +106,15 @@ namespace OpenGL
                 CurrentSectionPositon.y += SectionSize.y ;
             }
 
-            float StepX = SectionSize.x / (VertexCountX - 1) ;
-            float StepY = SectionSize.y / (VertexCountZ - 1) ;
-            float currentX = 0;
-            float currentZ = 0;
-
-            
             //创建abo
             glGenVertexArrays(1,&mABO);
             glBindVertexArray(mABO);
 
             //创建vbo
+            float StepX = SectionSize.x / (VertexCountX - 1) ;
+            float StepY = SectionSize.y / (VertexCountZ - 1) ;
+            float currentX = 0;
+            float currentZ = 0;
             std::vector<Vertex> verts; 
             for(int z = 0;z < VertexCountZ ; ++z)
             {
@@ -204,7 +202,7 @@ namespace OpenGL
                 glUniformMatrix4fv(mProjectionMatrixLocation,1,GL_FALSE,glm::value_ptr(mCamera->getProjectionMatrix()));
 
                 glUniform4f(mColorLocation,1,0,0,1);
-                glUniform1f(mHeightScaleLocation,2550.0f*3);
+                glUniform1f(mHeightScaleLocation,2550.0f*2);
                 glUniform1i(mIsDrawLineLocation,0);
                 glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
                 OnRenderImpl();
