@@ -29,7 +29,7 @@ namespace OpenGL
         {
             mCamera = InCam;
 
-            WorldScale = InWorldSize;
+            WorldScale = InWorldScale;
             SectionCount.x = (InWorldSize.x - 1) >> SECTION_SHIFT;
             SectionCount.y = (InWorldSize.z - 1) >> SECTION_SHIFT;
             glm::vec2 SectionSize;
@@ -95,7 +95,7 @@ namespace OpenGL
                     glm::vec2 SectionPosition = CurrentSectionPositon;
 
                     Section.ModelMatrix = glm::mat4(1.0f);
-                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(SectionPosition.x, 0 , SectionPosition.y));
+                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3(SectionPosition.x * InWorldScale.x, 0 , SectionPosition.y * InWorldScale.z));
                     Section.ModelMatrix = glm::scale(Section.ModelMatrix,glm::vec3(InWorldScale.x , 1.0f , InWorldScale.z ));
 
                     CurrentSectionPositon.x += SectionSize.x ;
