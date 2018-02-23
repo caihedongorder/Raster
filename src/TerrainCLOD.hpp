@@ -30,12 +30,53 @@ namespace OpenGL
         {
             mCamera = InCam;
 
+            mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
+            mProgramDrawLineOrPoint.CreateProgram("shaders/terrain_line.vs","shaders/terrain_line.ps");
+            mPositionLocation = glGetAttribLocation(mProgram.getProgram(),"vPosition");
+            mColorLocation = glGetUniformLocation(mProgram.getProgram(),"vColor");
+            mHeightLocation = glGetAttribLocation(mProgram.getProgram(),"vHeight");
+            mIsDrawLineLocation = glGetUniformLocation(mProgram.getProgram(),"IsDrawLine");
+            mHeightScaleLocation = glGetUniformLocation(mProgram.getProgram(),"heightScale");
+            mModelMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"M");
+            mViewMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"V");
+            mProjectionMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"P");
+
             WorldScale = InWorldScale;
             SectionCount.x = (InWorldSize.x - 1) >> SECTION_SHIFT;
             SectionCount.y = (InWorldSize.z - 1) >> SECTION_SHIFT;
             glm::vec2 SectionSize;
             SectionSize.x = 1.0f / SectionCount.x;
             SectionSize.y = 1.0f / SectionCount.y;
+
+            //初始化terrainSection
+            float WorldSizeStartX = - 0.5f ;
+            float WorldSizeStartY = - 0.5f ;
+            glm::vec2 CurrentSectionPositon = glm::vec2( WorldSizeStartX , WorldSizeStartY );
+
+            TerrainSections.resize( SectionCount.x * SectionCount.y );
+            glm::mat4 WorldScaleMat(1.0f);
+            WorldScaleMat = glm::scale( WorldScaleMat , glm::vec3(InWorldScale.x , 1.0f , InWorldScale.z ));
+            for( int SectionY = 0 ; SectionY < SectionCount.y ; ++ SectionY )
+            {
+                CurrentSectionPositon.x = WorldSizeStartX ;
+                for(int SectionX = 0 ; SectionX < SectionCount.x ; ++ SectionX )
+                {
+                    auto& Section = TerrainSections[ SectionY * SectionCount.x + SectionX ];
+                    glm::vec2 SectionPosition = CurrentSectionPositon;
+
+                    Section.ModelMatrix = glm::mat4(1.0f);
+                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3( SectionPosition.x , 0 , SectionPosition.y ));
+
+                    Section.ModelMatrix = WorldScaleMat * Section.ModelMatrix ;
+
+                    CurrentSectionPositon.x += SectionSize.x ;
+                }
+                CurrentSectionPositon.y += SectionSize.y ;
+            }
+
+            //创建abo
+            glGenVertexArrays(1,&mABO);
+            glBindVertexArray(mABO);
 
             //创建高度 vbo
             std::vector<unsigned char> heightData;
@@ -73,55 +114,8 @@ namespace OpenGL
                 glBindBuffer(GL_ARRAY_BUFFER,0);
 
                 mHeightVBOs.push_back( heightVBO ) ;
-            }
 
-            mProgram.CreateProgram("shaders/terrain.vs","shaders/terrain.ps");
-            mProgramDrawLineOrPoint.CreateProgram("shaders/terrain_line.vs","shaders/terrain_line.ps");
-            mPositionLocation = glGetAttribLocation(mProgram.getProgram(),"vPosition");
-            mColorLocation = glGetUniformLocation(mProgram.getProgram(),"vColor");
-            mHeightLocation = glGetAttribLocation(mProgram.getProgram(),"vHeight");
-            mIsDrawLineLocation = glGetUniformLocation(mProgram.getProgram(),"IsDrawLine");
-            mHeightScaleLocation = glGetUniformLocation(mProgram.getProgram(),"heightScale");
-            mModelMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"M");
-            mViewMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"V");
-            mProjectionMatrixLocation = glGetUniformLocation(mProgram.getProgram(),"P");
-
-
-
-            float WorldSizeStartX = - 0.5f ;
-            float WorldSizeStartY = - 0.5f ;
-            glm::vec2 CurrentSectionPositon = glm::vec2( WorldSizeStartX , WorldSizeStartY );
-
-            TerrainSections.resize( SectionCount.x * SectionCount.y );
-            glm::mat4 WorldScaleMat(1.0f);
-            WorldScaleMat = glm::scale( WorldScaleMat , glm::vec3(InWorldScale.x , 1.0f , InWorldScale.z ));
-            for( int SectionY = 0 ; SectionY < SectionCount.y ; ++ SectionY )
-            {
-                CurrentSectionPositon.x = WorldSizeStartX ;
-                for(int SectionX = 0 ; SectionX < SectionCount.x ; ++ SectionX )
-                {
-                    auto& Section = TerrainSections[ SectionY * SectionCount.x + SectionX ];
-                    glm::vec2 SectionPosition = CurrentSectionPositon;
-
-                    Section.ModelMatrix = glm::mat4(1.0f);
-                    Section.ModelMatrix = glm::translate(Section.ModelMatrix,glm::vec3( SectionPosition.x , 0 , SectionPosition.y ));
-
-                    Section.ModelMatrix = WorldScaleMat * Section.ModelMatrix ;
-
-                    CurrentSectionPositon.x += SectionSize.x ;
-                }
-                CurrentSectionPositon.y += SectionSize.y ;
-            }
-
-            //创建abo
-            glGenVertexArrays(1,&mABO);
-            glBindVertexArray(mABO);
-
-            //创建vbo
-            for( int iLod = 0 ; iLod < mMaxLods ; ++iLod )
-            {
-                int VertexCountX = (SECTION_SIZE >> iLod) + 1;
-                int VertexCountZ = (SECTION_SIZE >> iLod) + 1;
+                //创建vbo
                 float StepX = SectionSize.x / ( VertexCountX - 1 ) ;
                 float StepY = SectionSize.y / ( VertexCountZ - 1 ) ;
                 float currentX = 0;
@@ -151,6 +145,8 @@ namespace OpenGL
 
                 mPositionVBOs.push_back( PositionVBO ) ;
             }
+
+
 
 
 
