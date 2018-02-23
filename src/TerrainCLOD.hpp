@@ -74,10 +74,6 @@ namespace OpenGL
                 CurrentSectionPositon.y += SectionSize.y ;
             }
 
-            //创建abo
-            glGenVertexArrays(1,&mABO);
-            glBindVertexArray(mABO);
-
             //创建高度 vbo
             std::vector<unsigned char> heightData;
             std::vector<unsigned char> heightDataProcessed;
@@ -144,45 +140,41 @@ namespace OpenGL
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
 
                 mPositionVBOs.push_back( PositionVBO ) ;
-            }
 
 
-
-
-
-            // 创建索引
-            int VertexCountX = (SECTION_SIZE >> 0) + 1;
-            int VertexCountZ = (SECTION_SIZE >> 0) + 1;
-            std::vector<GLuint> indices;
-            float currentX = 0;
-            float currentZ = 0;
-            for(int z = 0 ; z < VertexCountZ - 1 ; ++z)
-            {
+                // 创建索引
+                std::vector<GLuint> indices;
                 currentX = 0;
-                for(int x = 0 ; x < VertexCountX - 1 ; ++ x)
+                currentZ = 0;
+                for(int z = 0 ; z < VertexCountZ - 1 ; ++z)
                 {
-                    indices.push_back( ( currentZ +  1 )   * VertexCountX + currentX       );
-                    indices.push_back(  currentZ            * VertexCountX + currentX + 1   );
-                    indices.push_back(  currentZ            * VertexCountX + currentX       );
+                    currentX = 0;
+                    for(int x = 0 ; x < VertexCountX - 1 ; ++ x)
+                    {
+                        indices.push_back( ( currentZ +  1 )   * VertexCountX + currentX       );
+                        indices.push_back(  currentZ            * VertexCountX + currentX + 1   );
+                        indices.push_back(  currentZ            * VertexCountX + currentX       );
 
-                    indices.push_back(( currentZ  +  1 )  * VertexCountX + currentX       );
-                    indices.push_back(( currentZ  +  1 )  * VertexCountX + currentX + 1   );
-                    indices.push_back(  currentZ            * VertexCountX + currentX + 1   );
+                        indices.push_back(( currentZ  +  1 )  * VertexCountX + currentX       );
+                        indices.push_back(( currentZ  +  1 )  * VertexCountX + currentX + 1   );
+                        indices.push_back(  currentZ            * VertexCountX + currentX + 1   );
 
-                    currentX += 1;
+                        currentX += 1;
+                    }
+                    currentZ += 1;
                 }
-                currentZ += 1;
+
+                mIndexCounts.push_back( indices.size() ) ;
+
+                GLuint IBO;
+                glGenBuffers(1, &IBO);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices.size(), &indices[0], GL_STATIC_DRAW);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+
+                mIBOs.push_back( IBO ) ;
             }
 
-			mIndexCount= indices.size();
-
-            GLuint IBO;
-			glGenBuffers(1, &IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(GLuint)*indices.size(), &indices[0], GL_STATIC_DRAW);
-
-            glBindVertexArray(0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
@@ -236,7 +228,6 @@ namespace OpenGL
 		}
     private:
         void OnRenderImpl(float heightOffset = 0.0f){
-            glBindVertexArray(mABO);
             glEnableVertexAttribArray(mHeightLocation);
             glEnableVertexAttribArray(mPositionLocation);
             for(int SectionY = 0 ; SectionY < SectionCount.y ; ++SectionY )
@@ -254,19 +245,19 @@ namespace OpenGL
                     glBindBuffer(GL_ARRAY_BUFFER, mPositionVBOs[ Section.iLod ] );
                     glVertexAttribPointer(mPositionLocation,2,GL_FLOAT,GL_FALSE,sizeof(Vertex),0);
 
-                    glDrawElements(GL_TRIANGLES, mIndexCount, GL_UNSIGNED_INT, nullptr);
+                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBOs[ Section.iLod ]);
+                    glDrawElements(GL_TRIANGLES, mIndexCounts[ Section.iLod ], GL_UNSIGNED_INT, nullptr);
                 }
             }
             glDisableVertexAttribArray(mHeightLocation);
             glDisableVertexAttribArray(mPositionLocation);
             glBindBuffer(GL_ARRAY_BUFFER,0);
-            glBindVertexArray(0);
         }
     private:
-        GLuint mABO;
         std::vector<GLuint> mHeightVBOs;
         std::vector<GLuint> mPositionVBOs;
-		int mIndexCount;
+        std::vector<GLuint> mIBOs;
+        std::vector<int> mIndexCounts;
 		Raster::Image img;
 		float RotationAngle;
 		float CamY;
